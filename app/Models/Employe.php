@@ -12,6 +12,23 @@ class Employe extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $fillable = [
+        'name',
+        'nip',
+        'phone_number',
+        'is_wa',
+        'gender',
+        'email',
+        'pangkat_id',
+        'jabatan_id',
+        'unit_id',
+        'eselon_id',
+        'tmt_pangkat',
+        'tmt_jabatan',
+        'tmt_pensiun',
+        'created_by',
+    ];
+
     public function pangkat()
     {
         return $this->hasOne(Pangkat::class, 'id', 'pangkat_id')->withTrashed();

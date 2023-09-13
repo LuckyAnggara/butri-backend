@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('jabatans', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('group');
             $table->timestamps();
             $table->softDeletes();
         });

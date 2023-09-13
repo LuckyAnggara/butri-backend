@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('units', function (Blueprint $table) {
+        Schema::create('kenaikan_jenjang_jabatans', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('group');
+            $table->integer('employe_id');
+            $table->date('tmt_jenjang');
+            $table->integer('created_by');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('units');
+        Schema::dropIfExists('kenaikan_jenjang_jabatans');
     }
 };

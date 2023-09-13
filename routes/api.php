@@ -2,6 +2,10 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EmployeController;
+use App\Http\Controllers\EselonController;
+use App\Http\Controllers\JabatanController;
+use App\Http\Controllers\PangkatController;
+use App\Http\Controllers\UnitController;
 use Illuminate\Http\Request;
 use App\Models\Jabatan;
 use Illuminate\Support\Facades\Route;
@@ -21,6 +25,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
 });
 
 Route::resource('employee', EmployeController::class);
+Route::resource('jabatan', JabatanController::class);
+Route::resource('pangkat', PangkatController::class);
+Route::resource('unit', UnitController::class);
+Route::resource('eselon', EselonController::class);
 
 
 Route::controller(AuthController::class)->group(function () {
