@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('employe_id');
             $table->date('tmt_pensiun');
+            $table->text('notes');
             $table->integer('created_by');
             $table->timestamps();
         });
