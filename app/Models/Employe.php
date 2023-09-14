@@ -29,6 +29,12 @@ class Employe extends Model
         'created_by',
     ];
 
+    protected $casts = [
+        'tmt_jabatan' => 'datetime:d F Y',
+        'tmt_pangkat' => 'datetime:d F Y',
+        'tmt_pensiun' => 'datetime:d F Y',
+    ];
+
     public function pangkat()
     {
         return $this->hasOne(Pangkat::class, 'id', 'pangkat_id')->withTrashed();

@@ -4,7 +4,10 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EmployeController;
 use App\Http\Controllers\EselonController;
 use App\Http\Controllers\JabatanController;
+use App\Http\Controllers\MutasiPegawaiController;
 use App\Http\Controllers\PangkatController;
+use App\Http\Controllers\PengembanganController;
+use App\Http\Controllers\PensiunController;
 use App\Http\Controllers\UnitController;
 use Illuminate\Http\Request;
 use App\Models\Jabatan;
@@ -29,6 +32,11 @@ Route::resource('jabatan', JabatanController::class);
 Route::resource('pangkat', PangkatController::class);
 Route::resource('unit', UnitController::class);
 Route::resource('eselon', EselonController::class);
+
+Route::resource('pensiun', PensiunController::class);
+Route::resource('pengembangan', PengembanganController::class);
+Route::resource('mutasi', MutasiPegawaiController::class);
+
 
 
 Route::controller(AuthController::class)->group(function () {

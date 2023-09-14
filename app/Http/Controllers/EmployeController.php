@@ -16,6 +16,10 @@ class EmployeController extends BaseController
         $name = $request->input('name');
 
         $data = Employe::with('pangkat', 'jabatan', 'unit')
+            ->where(function ($query) {
+                $query->WhereNull('tmt_pensiun')
+                    ->orWhereNot('tmt_pensiun', '<=', Carbon::today());
+            })
             ->when($name, function ($query, $name) {
                 return $query->where('name', 'like', '%' . $name . '%')
                     ->orWhere('nip', 'like', '%' . $name . '%');
@@ -26,9 +30,9 @@ class EmployeController extends BaseController
         return $this->sendResponse($data, 'Data fetched');
     }
 
-    public function show($sku)
+    public function show($id)
     {
-        $result = Employe::where('sku', $sku)
+        $result = Employe::where('id', $id)
             ->with(['pangkat', 'jabatan', 'unit',])
             ->first();
         if ($result) {
@@ -68,18 +72,28 @@ class EmployeController extends BaseController
 
     public function update(Request $request, $id)
     {
-        $input = $request->all();
-        $validator = Validator::make($input, [
-            'name' => 'required',
-        ]);
-
+        $data = json_decode($request->getContent());
         try {
             DB::beginTransaction();
-            $item = Item::findOrFail($id);
-            $item->update($input);
+            $pegawai = Employe::findOrFail($id);
+            $pegawai->update([
+                'name' => $data->name,
+                'nip' =>  $data->nip,
+                'phone_number' =>  $data->phone_number,
+                'is_wa' =>  $data->is_wa ?? false,
+                'gender' =>  $data->gender,
+                'email' =>  $data->email,
+                'pangkat_id' =>  $data->pangkat_id,
+                'jabatan_id' =>  $data->jabatan_id,
+                'unit_id' =>  $data->unit_id,
+                'eselon_id' =>  $data->eselon_id ?? null,
+                'tmt_pangkat' => Carbon::createFromFormat('d M Y', $data->tmt_pangkat)->format('Y-m-d'),
+                'tmt_jabatan' =>  Carbon::createFromFormat('d M Y', $data->tmt_jabatan)->format('Y-m-d'),
+                'tmt_pensiun' => Carbon::createFromFormat('d M Y', $data->tmt_pensiun)->format('Y-m-d'),
+            ]);
 
             DB::commit();
-            return $this->sendResponse($item, 'Updated berhasil', 201);
+            return $this->sendResponse($pegawai, 'Updated berhasil', 201);
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->sendError($e->getMessage(), 'Error');

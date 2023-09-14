@@ -13,11 +13,14 @@ return new class extends Migration
     {
         Schema::create('pensiuns', function (Blueprint $table) {
             $table->id();
+            $table->string('nomor_sk');
+            $table->text('tentang');
             $table->integer('employe_id');
             $table->date('tmt_pensiun');
             $table->text('notes');
             $table->integer('created_by');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
