@@ -12,6 +12,7 @@ use App\Http\Controllers\MutasiPegawaiController;
 use App\Http\Controllers\PangkatController;
 use App\Http\Controllers\PengembanganController;
 use App\Http\Controllers\PensiunController;
+use App\Http\Controllers\ProgramUnggulanController;
 use App\Http\Controllers\UnitController;
 use Illuminate\Http\Request;
 use App\Models\Jabatan;
@@ -45,6 +46,7 @@ Route::resource('kgb', KenaikanGajiBerkalaController::class);
 Route::resource('dashboard-kepegawaian', DashboardKepegawaianController::class);
 
 Route::resource('kegiatan', KegiatanController::class);
+Route::resource('program-unggulan', ProgramUnggulanController::class);
 
 
 

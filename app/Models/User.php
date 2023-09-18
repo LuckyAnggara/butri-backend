@@ -22,6 +22,8 @@ class User extends Authenticatable
         'username',
         'email',
         'password',
+        'role_id',
+        'unit_id'
     ];
 
     /**
@@ -47,13 +49,12 @@ class User extends Authenticatable
 
     public function role()
     {
-         return $this->belongsTo(Role::class, 'role_id')
+        return $this->belongsTo(Role::class, 'role_id')
             ->select(['id', 'name']);
     }
 
-        public function unit()
+    public function unit()
     {
-         return $this->belongsTo(Unit::class, 'unit_id')
-            ->select(['id', 'name']);
+        return $this->hasOne(Unit::class, 'id', 'unit_id')->withTrashed();
     }
 }

@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             EselonSeeder::class,
             PangkatSeeder::class,
             UnitSeeder::class,
+            RoleSeeder::class,
             // EmployeSeeder::class,
         ]);
     }

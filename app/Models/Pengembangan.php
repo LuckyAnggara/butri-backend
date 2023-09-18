@@ -39,7 +39,6 @@ class Pengembangan extends Model
     public function list()
     {
         $data = $this->hasMany(DetailPengembangan::class, 'pengembangan_id', 'id');
-
         return $data;
     }
 
