@@ -11,16 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('kenaikan_gaji_berkalas', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('username');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->integer('role_id')->nullable();
-            $table->rememberToken();
+            $table->string('nomor_sk');
+            $table->text('notes');
+            $table->integer('employe_id');
+            $table->date('tmt_gaji');
+            $table->integer('created_by');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('kenaikan_gaji_berkalas');
     }
 };

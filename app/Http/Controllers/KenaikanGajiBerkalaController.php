@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employe;
-use App\Models\KenaikanPangkat;
+use App\Models\KenaikanGajiBerkala;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class KenaikanPangkatController extends BaseController
+class KenaikanGajiBerkalaController extends BaseController
 {
     public function index(Request $request)
     {
@@ -17,20 +17,20 @@ class KenaikanPangkatController extends BaseController
         $startDate = $request->input('start-date');
         $endDate = $request->input('end-date');
 
-        $data = KenaikanPangkat::select('kenaikan_pangkats.*')->with('pegawai','pangkat','pangkat_new')
-            ->join('employes', 'employes.id', '=', 'kenaikan_pangkats.employe_id')
+        $data = KenaikanGajiBerkala::select('kenaikan_gaji_berkalas.*')->with('pegawai.jabatan')
+            ->join('employes', 'employes.id', '=', 'kenaikan_gaji_berkalas.employe_id')
             ->when($name, function ($query, $name) {
                 return $query->where('employes.name', 'like', '%' . $name . '%')
                     ->orWhere('employes.nip', 'like', '%' . $name . '%')
-                    ->orWhere('kenaikan_pangkats.nomor_sk', 'like', '%' . $name . '%')
-                    ->orWhere('kenaikan_pangkats.notes', 'like', '%' . $name . '%');
+                    ->orWhere('kenaikan_gaji_berkalas.nomor_sk', 'like', '%' . $name . '%')
+                    ->orWhere('kenaikan_gaji_berkalas.notes', 'like', '%' . $name . '%');
             })
             ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
                 $startDate = Carbon::createFromFormat('d M Y', $startDate)->format('Y-m-d 00:00:00');
                 $endDate = Carbon::createFromFormat('d M Y', $endDate)->format('Y-m-d 23:59:59');
-                return $query->whereBetween('kenaikan_pangkats.tmt_pangkat', [$startDate, $endDate]);
+                return $query->whereBetween('kenaikan_gaji_berkalas.tmt_gaji', [$startDate, $endDate]);
             })
-            ->orderBy('kenaikan_pangkats.tmt_pangkat', 'asc')
+            ->orderBy('kenaikan_gaji_berkalas.tmt_gaji', 'asc')
             ->latest()
             ->paginate($perPage);
         return $this->sendResponse($data, 'Data fetched');
@@ -42,20 +42,13 @@ class KenaikanPangkatController extends BaseController
             DB::beginTransaction();
             $result = [];
             foreach ($data->list as $key => $value) {
-                $item = KenaikanPangkat::create([
+                $item = KenaikanGajiBerkala::create([
                     'nomor_sk' => $data->nomor_sk,
                     'notes' => $data->notes,
                     'employe_id' => $value->id,
-                    'pangkat_id' => $value->pangkat_id,
-                    'pangkat_new_id' => $value->pangkat_new_id,
                     'created_by' =>  $data->created_by,
-                    'tmt_pangkat' => Carbon::createFromFormat('d M Y', $data->date)->format('Y-m-d'),
+                    'tmt_gaji' => Carbon::createFromFormat('d M Y', $data->date)->format('Y-m-d'),
                 ]);
-
-                $pegawai = Employe::find($value->id);
-                $pegawai->tmt_pangkat = Carbon::createFromFormat('d M Y', $data->date)->format('Y-m-d');
-                $pegawai->pangkat_id = $item->pangkat_new_id;
-                $pegawai->save();
                 $result[] = $item;
             }
             DB::commit();
@@ -70,7 +63,7 @@ class KenaikanPangkatController extends BaseController
     {
         DB::beginTransaction();
         try {
-            $data = KenaikanPangkat::find($id);
+            $data = KenaikanGajiBerkala::find($id);
             if ($data) {
                 $data->delete();
                 DB::commit();

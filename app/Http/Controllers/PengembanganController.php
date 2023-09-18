@@ -68,6 +68,7 @@ class PengembanganController extends BaseController
             return $this->sendError($e->getMessage(), 'Failed to saved data');
         }
     }
+    
     public function show($id)
     {
         $result = Pengembangan::where('id', $id)

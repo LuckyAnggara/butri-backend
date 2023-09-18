@@ -20,6 +20,8 @@ return new class extends Migration
             $table->integer('jabatan_new_id');
             $table->integer('unit_id');
             $table->integer('unit_new_id');
+            $table->boolean('masuk')->default(false);
+            $table->boolean('keluar')->default(false);
             $table->date('tmt_jabatan');
             $table->integer('created_by');
             $table->timestamps();

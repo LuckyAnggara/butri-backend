@@ -11,15 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('kenaikan_pangkats', function (Blueprint $table) {
+        Schema::create('kegiatans', function (Blueprint $table) {
             $table->id();
-            $table->string('nomor_sk');
+            $table->string('name');
+            $table->date('start_at');
+            $table->date('end_at');
+            $table->text('output');
             $table->text('notes');
-            $table->integer('employe_id');
-            $table->integer('pangkat_id');
-            $table->integer('pangkat_new_id');
+            $table->string('tempat');
+            $table->enum('jenis_kegiatan', ['RAPAT INTERNAL', 'RAPAT EKSTERNAL','DINAS LUAR','KOORDINASI']);
+            $table->integer('unit_id');
             $table->integer('created_by');
-            $table->date('tmt_pangkat');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -30,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('kenaikan_pangkats');
+        Schema::dropIfExists('kegiatans');
     }
 };

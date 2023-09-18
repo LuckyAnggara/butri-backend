@@ -44,4 +44,16 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function role()
+    {
+         return $this->belongsTo(Role::class, 'role_id')
+            ->select(['id', 'name']);
+    }
+
+        public function unit()
+    {
+         return $this->belongsTo(Unit::class, 'unit_id')
+            ->select(['id', 'name']);
+    }
 }
