@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CapaianProgramUnggulanController;
 use App\Http\Controllers\DashboardKepegawaianController;
 use App\Http\Controllers\EmployeController;
 use App\Http\Controllers\EselonController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\ProgramUnggulanController;
 use App\Http\Controllers\UnitController;
 use Illuminate\Http\Request;
 use App\Models\Jabatan;
+use App\Models\ProgramUnggulan;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -46,9 +48,8 @@ Route::resource('kgb', KenaikanGajiBerkalaController::class);
 Route::resource('dashboard-kepegawaian', DashboardKepegawaianController::class);
 
 Route::resource('kegiatan', KegiatanController::class);
+Route::resource('capaian-program-unggulan', CapaianProgramUnggulanController::class);
 Route::resource('program-unggulan', ProgramUnggulanController::class);
-
-
 
 
 Route::controller(AuthController::class)->group(function () {

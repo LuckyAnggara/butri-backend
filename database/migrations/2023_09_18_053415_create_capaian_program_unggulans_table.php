@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->integer('program_unggulan_id');
             $table->integer('kegiatan_id')->nullable();
+            $table->integer('unit_id');
+            $table->integer('created_by');
             $table->timestamps();
             $table->softDeletes();
         });

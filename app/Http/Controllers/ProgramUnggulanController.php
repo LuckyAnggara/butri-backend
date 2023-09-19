@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CapaianProgramUnggulan;
+use App\Models\Kegiatan;
 use App\Models\ProgramUnggulan;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProgramUnggulanController extends BaseController
 {
@@ -15,7 +18,7 @@ class ProgramUnggulanController extends BaseController
         $date = $request->input('date');
 
 
-        $data = ProgramUnggulan::with('list')->when($date, function ($query, $date) {
+        $data = ProgramUnggulan::when($date, function ($query, $date) {
             return $query->where('tahun', $date);
         })
             ->when($name, function ($query, $name) {

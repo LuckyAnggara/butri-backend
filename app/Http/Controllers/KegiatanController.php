@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CapaianProgramUnggulan;
 use App\Models\Kegiatan;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -18,12 +19,12 @@ class KegiatanController extends BaseController
         $endDate = $request->input('end-date');
 
         $data = Kegiatan::when($unit, function ($query, $unit) {
-                return $query->where('unit_id',$unit);                
-            })->when($name, function ($query, $name) {
-                return $query->where('name', 'like', '%' . $name . '%')
-                    ->orWhere('jenis_kegiatan', 'like', '%' . $name . '%')
-                    ->orWhere('tempat', 'like', '%' . $name . '%');
-            })
+            return $query->where('unit_id', $unit);
+        })->when($name, function ($query, $name) {
+            return $query->where('name', 'like', '%' . $name . '%')
+                ->orWhere('jenis_kegiatan', 'like', '%' . $name . '%')
+                ->orWhere('tempat', 'like', '%' . $name . '%');
+        })
             ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
                 $startDate = Carbon::createFromFormat('d M Y', $startDate)->format('Y-m-d 00:00:00');
                 $endDate = Carbon::createFromFormat('d M Y', $endDate)->format('Y-m-d 23:59:59');
@@ -35,7 +36,7 @@ class KegiatanController extends BaseController
         return $this->sendResponse($data, 'Data fetched');
     }
 
-     public function store(Request $request)
+    public function store(Request $request)
     {
         $data = json_decode($request->getContent());
         try {
@@ -51,7 +52,7 @@ class KegiatanController extends BaseController
                 'notes' => $data->notes,
                 'start_at' => $startDate,
                 'end_at' => $endDate,
-                'unit_id'=> $data->unit_id,
+                'unit_id' => $data->unit_id,
                 'created_by' =>  $data->created_by,
             ]);
             DB::commit();
@@ -62,12 +63,16 @@ class KegiatanController extends BaseController
         }
     }
 
-     public function destroy($id)
+    public function destroy($id)
     {
         DB::beginTransaction();
         try {
             $data = Kegiatan::find($id);
             if ($data) {
+                $capaian = CapaianProgramUnggulan::where('kegiatan_id', $id)->get();
+                foreach ($capaian as $key => $value) {
+                    $value->delete();
+                }
                 $data->delete();
                 DB::commit();
                 return $this->sendResponse($data, 'Data berhasil dihapus', 200);
