@@ -1,10 +1,15 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CapaianIndikatorKegiatanUtamaController;
+use App\Http\Controllers\CapaianIndikatorKinerjaKegiatanController;
 use App\Http\Controllers\CapaianProgramUnggulanController;
 use App\Http\Controllers\DashboardKepegawaianController;
 use App\Http\Controllers\EmployeController;
 use App\Http\Controllers\EselonController;
+use App\Http\Controllers\GroupUnitController;
+use App\Http\Controllers\IndikatorKinerjaKegiatanController;
+use App\Http\Controllers\IndikatorKinerjaUtamaController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\KenaikanGajiBerkalaController;
@@ -34,10 +39,12 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth:sanctum'])->group(function () {
 });
 
+Route::resource('unit', UnitController::class);
+Route::resource('unit-group', GroupUnitController::class);
+
 Route::resource('employee', EmployeController::class);
 Route::resource('jabatan', JabatanController::class);
 Route::resource('pangkat', PangkatController::class);
-Route::resource('unit', UnitController::class);
 Route::resource('eselon', EselonController::class);
 
 Route::resource('pensiun', PensiunController::class);
@@ -50,6 +57,10 @@ Route::resource('dashboard-kepegawaian', DashboardKepegawaianController::class);
 Route::resource('kegiatan', KegiatanController::class);
 Route::resource('capaian-program-unggulan', CapaianProgramUnggulanController::class);
 Route::resource('program-unggulan', ProgramUnggulanController::class);
+Route::resource('indikator-kinerja-utama', IndikatorKinerjaUtamaController::class);
+Route::resource('indikator-kinerja-kegiatan', IndikatorKinerjaKegiatanController::class);
+Route::resource('capaian-iku', CapaianIndikatorKegiatanUtamaController::class);
+Route::resource('capaian-ikk', CapaianIndikatorKinerjaKegiatanController::class);
 
 
 Route::controller(AuthController::class)->group(function () {

@@ -35,9 +35,9 @@ class KenaikanGajiBerkalaController extends BaseController
             ->paginate($perPage);
         return $this->sendResponse($data, 'Data fetched');
     }
-     public function store(Request $request)
+    public function store(Request $request)
     {
-         $data = json_decode($request->getContent());
+        $data = json_decode($request->getContent());
         try {
             DB::beginTransaction();
             $result = [];

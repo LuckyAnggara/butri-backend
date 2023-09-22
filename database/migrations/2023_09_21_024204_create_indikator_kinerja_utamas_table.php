@@ -11,17 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('indikator_kinerja_utamas', function (Blueprint $table) {
             $table->id();
+            $table->string('tahun');
+            $table->integer('nomor');
+            $table->integer('ss_id')->nullable();
             $table->string('name');
-            $table->string('username');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->integer('role_id')->nullable();
-            $table->integer('unit_id')->nullable();
-            $table->rememberToken();
+            $table->string('target');
+            $table->integer('created_by')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -30,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('indikator_kinerja_utamas');
     }
 };

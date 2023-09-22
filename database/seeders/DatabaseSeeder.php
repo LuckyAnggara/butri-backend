@@ -25,6 +25,8 @@ class DatabaseSeeder extends Seeder
             PangkatSeeder::class,
             UnitSeeder::class,
             RoleSeeder::class,
+            UnitGroupSeeder::class,
+            IKUSeeder::class
             // EmployeSeeder::class,
         ]);
     }
