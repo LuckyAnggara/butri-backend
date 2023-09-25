@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('kegiatan')->nullable();
             $table->text('kendala')->nullable();
             $table->text('hambatan')->nullable();
-            $table->integer('unit_id');
+            $table->integer('group_id');
             $table->integer('created_by');
             $table->timestamps();
             $table->softDeletes();

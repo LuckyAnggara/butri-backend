@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('units', function (Blueprint $table) {
+        Schema::create('bmn_mutasis', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('group_id');
-            $table->string('menu')->nullable();
+            $table->integer('bmn_inventaris_id');
+            $table->double('masuk');
+            $table->double('keluar');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('units');
+        Schema::dropIfExists('bmn_mutasis');
     }
 };

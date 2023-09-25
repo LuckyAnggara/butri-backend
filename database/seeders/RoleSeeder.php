@@ -13,13 +13,10 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-       $data = [
-            ['name' => 'kepegawaian'],
-            ['name' => 'keuangan'],
-            ['name' => 'program dan pelaporan'],
-            ['name' => 'humas dan sip'],
-            ['name' => 'umum'],
-            ['name' => 'inspektorat wilayah'],
+        $data = [
+            ['name' => 'user'],
+            ['name' => 'admin'],
+            ['name' => 'superuser'],
         ];
         Role::insert($data);
     }

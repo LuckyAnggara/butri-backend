@@ -11,11 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('units', function (Blueprint $table) {
+        Schema::create('persuratans', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('bulan');
+            $table->string('tahun');
+            $table->double('surat_masuk');
+            $table->double('surat_keluar');
             $table->string('group_id');
-            $table->string('menu')->nullable();
+            $table->integer('created_by');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -26,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('units');
+        Schema::dropIfExists('persuratans');
     }
 };

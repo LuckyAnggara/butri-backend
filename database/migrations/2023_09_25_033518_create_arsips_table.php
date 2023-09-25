@@ -11,11 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('units', function (Blueprint $table) {
+        Schema::create('arsips', function (Blueprint $table) {
             $table->id();
+            $table->enum('tipe', ['PEMUSNAHAN', 'PENGARSIPAN']);
             $table->string('name');
-            $table->string('group_id');
-            $table->string('menu')->nullable();
+            $table->date('start_at');
+            $table->date('end_at');
+            $table->text('output');
+            $table->text('notes');
+            $table->integer('created_by');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -26,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('units');
+        Schema::dropIfExists('arsips');
     }
 };
