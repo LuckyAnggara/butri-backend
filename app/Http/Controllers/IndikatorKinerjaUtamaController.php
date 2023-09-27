@@ -16,7 +16,7 @@ class IndikatorKinerjaUtamaController extends BaseController
         $tahun = $request->input('tahun');
 
 
-        $data = IndikatorKinerjaUtama::when($tahun, function ($query, $tahun) {
+        $data = IndikatorKinerjaUtama::with('capaian')->when($tahun, function ($query, $tahun) {
             return $query->where('tahun', $tahun);
         })
             ->when($name, function ($query, $name) {

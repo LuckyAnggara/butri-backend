@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\ArsipController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CapaianIndikatorKegiatanUtamaController;
 use App\Http\Controllers\CapaianIndikatorKinerjaKegiatanController;
 use App\Http\Controllers\CapaianProgramUnggulanController;
 use App\Http\Controllers\DashboardKepegawaianController;
+use App\Http\Controllers\DipaController;
 use App\Http\Controllers\EmployeController;
 use App\Http\Controllers\EselonController;
 use App\Http\Controllers\GroupUnitController;
@@ -59,7 +61,10 @@ Route::resource('indikator-kinerja-kegiatan', IndikatorKinerjaKegiatanController
 
 // UMUM
 Route::resource('pengelolaan-persuratan', PersuratanController::class);
+Route::resource('pengelolaan-arsip', ArsipController::class);
 
+// KEUANGAN
+Route::resource('dipa', DipaController::class);
 // ALL 
 Route::resource('kegiatan', KegiatanController::class);
 Route::resource('capaian-program-unggulan', CapaianProgramUnggulanController::class);

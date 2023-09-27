@@ -17,4 +17,9 @@ class IndikatorKinerjaUtama extends Model
         'nomor',
         'created_by',
     ];
+
+    public function capaian()
+    {
+        return $this->hasOne(CapaianIndikatorKegiatanUtama::class, 'iku_id', 'id')->withTrashed();
+    }
 }

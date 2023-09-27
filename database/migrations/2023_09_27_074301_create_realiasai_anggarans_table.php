@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('arsips', function (Blueprint $table) {
+        Schema::create('realiasai_anggarans', function (Blueprint $table) {
             $table->id();
-            $table->enum('jenis_kegiatan', ['PEMUSNAHAN', 'PENGARSIPAN']);
-            $table->text('kegiatan');
-            $table->text('output');
-            $table->text('notes');
+            $table->string('bulan');
+            $table->integer('dipa_id');
+            $table->double('realisasi');
+            $table->double('dp');
             $table->integer('created_by');
             $table->timestamps();
             $table->softDeletes();
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('arsips');
+        Schema::dropIfExists('realiasai_anggarans');
     }
 };
