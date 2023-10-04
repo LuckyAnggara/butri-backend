@@ -22,6 +22,7 @@ use App\Http\Controllers\PengembanganController;
 use App\Http\Controllers\PensiunController;
 use App\Http\Controllers\PersuratanController;
 use App\Http\Controllers\ProgramUnggulanController;
+use App\Http\Controllers\RealiasaiAnggaranController;
 use App\Http\Controllers\UnitController;
 
 use Illuminate\Support\Facades\Route;
@@ -65,6 +66,7 @@ Route::resource('pengelolaan-arsip', ArsipController::class);
 
 // KEUANGAN
 Route::resource('dipa', DipaController::class);
+Route::resource('realisasi-anggaran', RealiasaiAnggaranController::class);
 // ALL 
 Route::resource('kegiatan', KegiatanController::class);
 Route::resource('capaian-program-unggulan', CapaianProgramUnggulanController::class);
