@@ -10,12 +10,14 @@ use App\Http\Controllers\DipaController;
 use App\Http\Controllers\EmployeController;
 use App\Http\Controllers\EselonController;
 use App\Http\Controllers\GroupUnitController;
+use App\Http\Controllers\IkpaController;
 use App\Http\Controllers\IndikatorKinerjaKegiatanController;
 use App\Http\Controllers\IndikatorKinerjaUtamaController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\KenaikanGajiBerkalaController;
 use App\Http\Controllers\KenaikanPangkatController;
+use App\Http\Controllers\KinerjaKeuanganController;
 use App\Http\Controllers\MutasiPegawaiController;
 use App\Http\Controllers\PangkatController;
 use App\Http\Controllers\PengembanganController;
@@ -67,6 +69,8 @@ Route::resource('pengelolaan-arsip', ArsipController::class);
 // KEUANGAN
 Route::resource('dipa', DipaController::class);
 Route::resource('realisasi-anggaran', RealiasaiAnggaranController::class);
+Route::resource('kinerja-keuangan', KinerjaKeuanganController::class);
+Route::resource('ikpa', IkpaController::class);
 // ALL 
 Route::resource('kegiatan', KegiatanController::class);
 Route::resource('capaian-program-unggulan', CapaianProgramUnggulanController::class);

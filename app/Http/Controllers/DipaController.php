@@ -10,48 +10,81 @@ class DipaController extends BaseController
 {
     public function index(Request $request)
     {
-        $perPage = $request->input('limit', 1000);
-        $name = $request->input('query');
         $tahun = $request->input('tahun');
-        $bulan = $request->input('bulan');
+        $unit = $request->input('unit');
 
-     
-        $data = Dipa::with(['realisasi' => function ($query) use ($bulan) {
-            $query->where('bulan', '<=', $bulan);
-        }])     
+        $data = Dipa::with('group')->when($tahun, function ($query, $tahun) {
+            return $query->where('tahun', $tahun);
+        })
+        ->when($unit, function ($query, $unit) {
+            return $query->where('group_id', $unit);
+        })
         ->get();
-        foreach ($data as $key => $value) {
-            $total_realisasi = 0;
-            foreach ($value->realisasi as $key => $x) {
-                $total_realisasi += $x->realisasi;
-            }
-
-            $collection = collect($value->realisasi);
-
-            $filteredCollection = $collection->where('bulan',  $bulan)->first();
-
-            $value->total_realisasi = $total_realisasi;
-            $value->dp_saat_ini = $filteredCollection->dp ?? 0;
-            $value->realisasi_saat_ini = $filteredCollection->realisasi ?? 0;
-           
-        }
-     
-          
-        
-    
-        
-        // ->when($tahun, function ($query, $tahun) {
-        //     return $query->where('tahun', $tahun);
-        // })
-        //     // ->when($tahun, function ($query, $bulan) {
-        //     //     return $query->where('bulan', $bulan);
-        //     // })
-        //     ->when($name, function ($query, $name) {
-        //         return $query->where('name', 'like', '%' . $name . '%');
-        //         $query->orWhere('kode', 'like', '%' . $name . '%');
-        //     })
-        //     ->latest()
-        //     ->paginate($perPage);
+      
         return $this->sendResponse($data, 'Data fetched');
+    }
+
+    public function store(Request $request)
+    {
+        $data = json_decode($request->getContent());
+        try {
+            DB::beginTransaction();
+            $result = Dipa::create([
+                'kode' => $data->kode,
+                'tahun' => $data->tahun,
+                'name' =>  $data->name,
+                'pagu' =>  $data->pagu,
+                'group_id' =>  $data->group_id,
+                'created_by' => $data->created_by,
+            ]);
+            DB::commit();
+            return $this->sendResponse($result, 'Data berhasil dibuat');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError($e->getMessage(), 'Failed to saved data');
+        }
+    }
+
+     public function update(Request $request, $id)
+    {
+        $data = json_decode($request->getContent());
+
+
+        try {
+            DB::beginTransaction();
+            $result = Dipa::findOrFail($id);
+            $result->update([
+                'kode' => $data->kode,
+                'tahun' => $data->tahun,
+                'name' =>  $data->name,
+                'group_id'=> $data->group_id,
+                'pagu' =>  $data->pagu,
+                'created_by' => $data->created_by,
+            ]);
+
+            DB::commit();
+            return $this->sendResponse($result, 'Updated berhasil', 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError($e->getMessage(), 'Error');
+        }
+    }
+
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+        try {
+            $data = Dipa::find($id);
+            if ($data) {
+                $data->delete();
+                DB::commit();
+                return $this->sendResponse($data, 'Data berhasil dihapus', 200);
+            } else {
+                return $this->sendError('', 'Data tidak ditemukan', 404);
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError('Terjadi kesalahan', $e->getMessage(), 500);
+        }
     }
 }

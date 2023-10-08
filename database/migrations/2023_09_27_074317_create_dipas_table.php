@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('kode');
             $table->string('name');
             $table->double('pagu');
+            $table->string('jenis');
             $table->integer('group_id');
             $table->integer('created_by');
             $table->timestamps();
