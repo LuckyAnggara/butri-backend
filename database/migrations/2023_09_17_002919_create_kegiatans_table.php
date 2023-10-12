@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('output');
             $table->text('notes');
             $table->string('tempat');
-            $table->enum('jenis_kegiatan', ['RAPAT INTERNAL', 'RAPAT EKSTERNAL','DINAS LUAR','KOORDINASI']);
+            $table->enum('jenis_kegiatan', ['RAPAT INTERNAL', 'FORUM GROUP DISCUSION', 'RAPAT EKSTERNAL', 'DINAS LUAR', 'KOORDINASI', 'KONSINYERING', 'FASILITASI KEGIATAN', 'HELPDESK TI']);
             $table->integer('unit_id');
             $table->integer('created_by');
             $table->timestamps();

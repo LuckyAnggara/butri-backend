@@ -18,6 +18,7 @@ use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\KenaikanGajiBerkalaController;
 use App\Http\Controllers\KenaikanPangkatController;
 use App\Http\Controllers\KinerjaKeuanganController;
+use App\Http\Controllers\MonitoringPengawasanItwilController;
 use App\Http\Controllers\MutasiPegawaiController;
 use App\Http\Controllers\PangkatController;
 use App\Http\Controllers\PengembanganController;
@@ -65,6 +66,9 @@ Route::resource('indikator-kinerja-kegiatan', IndikatorKinerjaKegiatanController
 // UMUM
 Route::resource('pengelolaan-persuratan', PersuratanController::class);
 Route::resource('pengelolaan-arsip', ArsipController::class);
+
+// SIP
+Route::resource('monitoring-temuan-internal', MonitoringPengawasanItwilController::class);
 
 // KEUANGAN
 Route::resource('dipa', DipaController::class);

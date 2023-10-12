@@ -11,14 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('dipas', function (Blueprint $table) {
+        Schema::create('monitoring_pengawasan_itwils', function (Blueprint $table) {
             $table->id();
             $table->string('tahun');
-            $table->string('kode');
-            $table->string('name');
-            $table->double('pagu');
-            $table->string('jenis')->nullable();
+            $table->string('bulan');
             $table->integer('group_id');
+            $table->double('temuan_jumlah')->default(0);
+            $table->double('temuan_nominal')->default(0);
+            $table->double('tl_jumlah')->default(0);
+            $table->double('tl_nominal')->default(0);
+            $table->double('btl_jumlah')->default(0);
+            $table->double('btl_nominal')->default(0);
             $table->integer('created_by');
             $table->timestamps();
             $table->softDeletes();
@@ -30,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('dipas');
+        Schema::dropIfExists('monitoring_pengawasan_itwils');
     }
 };

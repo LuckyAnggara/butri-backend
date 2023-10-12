@@ -14,14 +14,14 @@ class UnitGroupSeeder extends Seeder
     public function run(): void
     {
         $unitGroupData = [
-            ['name' => 'Sekretariat Inspektorat Jenderal', 'has_child' => true],
-            ['name' => 'Inspektorat Wilayah I', 'has_child' => false],
-            ['name' => 'Inspektorat Wilayah II', 'has_child' => false],
-            ['name' => 'Inspektorat Wilayah III', 'has_child' => false],
-            ['name' => 'Inspektorat Wilayah IV', 'has_child' => false],
-            ['name' => 'Inspektorat Wilayah V', 'has_child' => false],
-            ['name' => 'Inspektorat Wilayah VI', 'has_child' => false],
-            ['name' => 'Inspektorat Jenderal', 'has_child' => true],
+            ['name' => 'Sekretariat Inspektorat Jenderal', 'has_child' => true, 'type' => 'management'],
+            ['name' => 'Inspektorat Wilayah I', 'has_child' => false, 'type' => 'teknis'],
+            ['name' => 'Inspektorat Wilayah II', 'has_child' => false, 'type' => 'teknis'],
+            ['name' => 'Inspektorat Wilayah III', 'has_child' => false, 'type' => 'teknis'],
+            ['name' => 'Inspektorat Wilayah IV', 'has_child' => false, 'type' => 'teknis'],
+            ['name' => 'Inspektorat Wilayah V', 'has_child' => false, 'type' => 'teknis'],
+            ['name' => 'Inspektorat Wilayah VI', 'has_child' => false, 'type' => 'teknis'],
+            ['name' => 'Inspektorat Jenderal', 'has_child' => true, 'type' => 'management'],
         ];
 
         // Simpan data ke dalam database atau format yang sesuai dengan kebutuhan Anda

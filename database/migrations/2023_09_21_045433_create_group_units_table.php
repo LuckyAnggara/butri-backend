@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->boolean('has_child')->default(true);
+            $table->string('type')->default('teknis');
             $table->timestamps();
         });
     }
