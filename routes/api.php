@@ -18,16 +18,23 @@ use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\KenaikanGajiBerkalaController;
 use App\Http\Controllers\KenaikanPangkatController;
 use App\Http\Controllers\KinerjaKeuanganController;
+use App\Http\Controllers\MonitoringPengaduanController;
 use App\Http\Controllers\MonitoringPengawasanItwilController;
+use App\Http\Controllers\MonitoringTemuanBpkController;
+use App\Http\Controllers\MonitoringTemuanBpkpController;
+use App\Http\Controllers\MonitoringTemuanOriController;
 use App\Http\Controllers\MutasiPegawaiController;
 use App\Http\Controllers\PangkatController;
+use App\Http\Controllers\PengelolaanMediaController;
 use App\Http\Controllers\PengembanganController;
 use App\Http\Controllers\PensiunController;
 use App\Http\Controllers\PersuratanController;
 use App\Http\Controllers\ProgramUnggulanController;
 use App\Http\Controllers\RealiasaiAnggaranController;
+use App\Http\Controllers\SatuanKerjaController;
 use App\Http\Controllers\UnitController;
-
+use App\Models\MonitoringPengaduan;
+use App\Models\MonitoringTemuanBpk;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -46,6 +53,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 Route::resource('unit', UnitController::class);
 Route::resource('unit-group', GroupUnitController::class);
+Route::resource('satuan-kerja', SatuanKerjaController::class);
 
 // KEPEGAWAIAN
 Route::resource('employee', EmployeController::class);
@@ -69,6 +77,11 @@ Route::resource('pengelolaan-arsip', ArsipController::class);
 
 // SIP
 Route::resource('monitoring-temuan-internal', MonitoringPengawasanItwilController::class);
+Route::resource('monitoring-temuan-bpk', MonitoringTemuanBpkController::class);
+Route::resource('monitoring-temuan-bpkp', MonitoringTemuanBpkpController::class);
+Route::resource('monitoring-temuan-ori', MonitoringTemuanOriController::class);
+Route::resource('monitoring-pengaduan', MonitoringPengaduanController::class);
+Route::resource('pengelolaan-media', PengelolaanMediaController::class);
 
 // KEUANGAN
 Route::resource('dipa', DipaController::class);
@@ -81,9 +94,6 @@ Route::resource('capaian-program-unggulan', CapaianProgramUnggulanController::cl
 Route::resource('program-unggulan', ProgramUnggulanController::class);
 Route::resource('capaian-iku', CapaianIndikatorKegiatanUtamaController::class);
 Route::resource('capaian-ikk', CapaianIndikatorKinerjaKegiatanController::class);
-
-
-
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('register', 'register');

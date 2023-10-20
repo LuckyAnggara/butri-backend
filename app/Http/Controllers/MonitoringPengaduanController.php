@@ -2,29 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MonitoringPengawasanItwil;
+use App\Models\MonitoringPengaduan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class MonitoringPengawasanItwilController extends BaseController
+class MonitoringPengaduanController extends BaseController
 {
     public function index(Request $request)
     {
         $tahun = $request->input('tahun');
         $bulan = $request->input('bulan');
-        $unit = $request->input('unit');
+        $eselon = $request->input('eselon');
 
-        $data = MonitoringPengawasanItwil::with('group')->when($tahun, function ($query, $tahun) {
-            return $query->where('tahun', $tahun);
-        })
+        $data = MonitoringPengaduan::select('monitoring_pengaduans.*')->with('satker')
+            ->join('satuan_kerjas', 'satuan_kerjas.id', '=', 'monitoring_pengaduans.satker_id')
+            ->when($tahun, function ($query, $tahun) {
+                return $query->where('tahun', $tahun);
+            })
             ->when($bulan, function ($query, $bulan) {
                 return $query->where('bulan', $bulan);
             })
-            ->when($unit, function ($query, $unit) {
-                return $query->where('group_id', $unit);
+            ->when($eselon, function ($query, $eselon) {
+                return $query->where('satuan_kerjas.tingkat', $eselon);
             })
             ->get();
-
         return $this->sendResponse($data, 'Data fetched');
     }
 
@@ -34,21 +35,22 @@ class MonitoringPengawasanItwilController extends BaseController
         $data = json_decode($request->getContent());
         try {
             DB::beginTransaction();
-            $exist = MonitoringPengawasanItwil::where('tahun', $data->tahun)->where('bulan', $data->bulan)->where('group_id', $data->group_id)->first();
+            $exist = MonitoringPengaduan::where('tahun', $data->tahun)->where('bulan', $data->bulan)->where('satker_id', $data->satker_id)->first();
             if ($exist) {
                 $exist->delete();
             }
-            $dd = MonitoringPengawasanItwil::create(
+            $dd = MonitoringPengaduan::create(
                 [
                     'bulan' => $data->bulan,
                     'tahun' => $data->tahun,
-                    'group_id' => $data->group_id,
-                    'temuan_jumlah' => $data->temuan_jumlah,
-                    'temuan_nominal' => $data->temuan_nominal,
-                    'tl_jumlah' => $data->tl_jumlah,
-                    'tl_nominal' => $data->tl_nominal,
-                    'btl_jumlah' => $data->temuan_jumlah - $data->tl_jumlah,
-                    'btl_nominal' => $data->temuan_nominal - $data->tl_nominal,
+                    'satker_id' => $data->satker_id,
+                    'wbs' => $data->wbs,
+                    'kotak_pengaduan' => $data->kotak_pengaduan,
+                    'aplikasi_lapor' => $data->aplikasi_lapor,
+                    'media_sosial' => $data->media_sosial,
+                    'surat_pos' => $data->surat_pos,
+                    'website' => $data->website,
+                    'sms_gateway' => $data->sms_gateway,
                     'created_by' => $data->created_by
                 ]
             );
@@ -64,7 +66,7 @@ class MonitoringPengawasanItwilController extends BaseController
     {
         DB::beginTransaction();
         try {
-            $data = MonitoringPengawasanItwil::find($id);
+            $data = MonitoringPengaduan::find($id);
             if ($data) {
                 $data->delete();
                 DB::commit();
