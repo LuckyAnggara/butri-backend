@@ -28,4 +28,62 @@ class ProgramUnggulanController extends BaseController
             ->paginate($perPage);
         return $this->sendResponse($data, 'Data fetched');
     }
+
+     public function store(Request $request)
+    {
+        $data = json_decode($request->getContent());
+        try {
+            DB::beginTransaction();
+            $result = ProgramUnggulan::create([
+                'name' => $data->name,
+                'target' => $data->target,
+                'tahun' => $data->tahun,
+                'satuan' => $data->satuan ?? '',
+            ]);
+            DB::commit();
+            return $this->sendResponse($result, 'Data berhasil dibuat');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError($e->getMessage(), 'Failed to saved data');
+        }
+    }
+
+    public function update(Request $request, $id)
+    {
+        $data = json_decode($request->getContent());
+        try {
+            DB::beginTransaction();
+            $program = ProgramUnggulan::findOrFail($id);
+            $program->update([
+                'name' => $data->name,
+                'target' => $data->target,
+                'tahun' => $data->tahun,
+                'satuan' => $data->satuan ?? '',
+            ]);
+
+            DB::commit();
+            return $this->sendResponse($program, 'Updated berhasil', 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError($e->getMessage(), 'Error');
+        }
+    }
+
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+        try {
+            $data = ProgramUnggulan::find($id);
+            if ($data) {
+                $data->delete();
+                DB::commit();
+                return $this->sendResponse($data, 'Data berhasil dihapus', 200);
+            } else {
+                return $this->sendError('', 'Data tidak ditemukan', 404);
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError('Terjadi kesalahan', $e->getMessage(), 500);
+        }
+    }
 }

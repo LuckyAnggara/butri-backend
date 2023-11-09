@@ -6,6 +6,8 @@ use App\Http\Controllers\CapaianIndikatorKegiatanUtamaController;
 use App\Http\Controllers\CapaianIndikatorKinerjaKegiatanController;
 use App\Http\Controllers\CapaianProgramUnggulanController;
 use App\Http\Controllers\DashboardKepegawaianController;
+use App\Http\Controllers\DashboardWilayahController;
+use App\Http\Controllers\DataPengawasanController;
 use App\Http\Controllers\DipaController;
 use App\Http\Controllers\EmployeController;
 use App\Http\Controllers\EselonController;
@@ -14,10 +16,12 @@ use App\Http\Controllers\IkpaController;
 use App\Http\Controllers\IndikatorKinerjaKegiatanController;
 use App\Http\Controllers\IndikatorKinerjaUtamaController;
 use App\Http\Controllers\JabatanController;
+use App\Http\Controllers\JenisPengawasanController;
 use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\KenaikanGajiBerkalaController;
 use App\Http\Controllers\KenaikanPangkatController;
 use App\Http\Controllers\KinerjaKeuanganController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\MonitoringPengaduanController;
 use App\Http\Controllers\MonitoringPengawasanItwilController;
 use App\Http\Controllers\MonitoringTemuanBpkController;
@@ -54,6 +58,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 Route::resource('unit', UnitController::class);
 Route::resource('unit-group', GroupUnitController::class);
 Route::resource('satuan-kerja', SatuanKerjaController::class);
+Route::resource('jenis-pengawasan', JenisPengawasanController::class);
 
 // KEPEGAWAIAN
 Route::resource('employee', EmployeController::class);
@@ -67,9 +72,21 @@ Route::resource('kepangkatan', KenaikanPangkatController::class);
 Route::resource('kgb', KenaikanGajiBerkalaController::class);
 Route::resource('dashboard-kepegawaian', DashboardKepegawaianController::class);
 
-// PROGRAM dan PELAPORAN
+// PROGRAM dan PELAPORAN // Admin
 Route::resource('indikator-kinerja-utama', IndikatorKinerjaUtamaController::class);
 Route::resource('indikator-kinerja-kegiatan', IndikatorKinerjaKegiatanController::class);
+Route::resource('program-unggulan', ProgramUnggulanController::class);
+
+Route::resource('laporan',LaporanController::class);
+Route::get(
+    'laporan-generate',
+    [LaporanController::class, 'generate']
+);
+Route::get(
+    'laporan-download/{id}',
+    [LaporanController::class, 'download']
+);
+
 
 // UMUM
 Route::resource('pengelolaan-persuratan', PersuratanController::class);
@@ -88,10 +105,14 @@ Route::resource('dipa', DipaController::class);
 Route::resource('realisasi-anggaran', RealiasaiAnggaranController::class);
 Route::resource('kinerja-keuangan', KinerjaKeuanganController::class);
 Route::resource('ikpa', IkpaController::class);
+
+// WILAYAH
+Route::resource('data-pengawasan', DataPengawasanController::class);
+Route::resource('dashboard-wilayah', DashboardWilayahController::class);
+
 // ALL 
 Route::resource('kegiatan', KegiatanController::class);
 Route::resource('capaian-program-unggulan', CapaianProgramUnggulanController::class);
-Route::resource('program-unggulan', ProgramUnggulanController::class);
 Route::resource('capaian-iku', CapaianIndikatorKegiatanUtamaController::class);
 Route::resource('capaian-ikk', CapaianIndikatorKinerjaKegiatanController::class);
 
