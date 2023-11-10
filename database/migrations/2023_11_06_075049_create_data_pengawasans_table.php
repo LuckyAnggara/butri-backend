@@ -12,20 +12,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('data_pengawasans', function (Blueprint $table) {
-        $table->id();
-        $table->text('name');
-        $table->string('tahun');
-        $table->string('bulan');
-        $table->string('sp_number')->nullable();
-        $table->date('sp_date')->nullable();
-        $table->integer('jenis_pengawasan_id')->nullable();
-        $table->timestamp('start_at')->nullable();
-        $table->timestamp('end_at')->nullable();
-        $table->text('notes')->nullable();
-        $table->text('output')->nullable();
-        $table->integer('unit_id');
-        $table->integer('created_by');
-        $table->timestamps();
+            $table->id();
+            $table->text('name');
+            $table->string('tahun');
+            $table->string('bulan');
+            $table->string('location');
+            $table->string('sp_number')->nullable();
+            $table->date('sp_date')->nullable();
+            $table->integer('jenis_pengawasan_id')->nullable();
+            $table->timestamp('start_at')->nullable();
+            $table->timestamp('end_at')->nullable();
+            $table->text('notes')->nullable();
+            $table->text('output')->nullable();
+            $table->integer('unit_id');
+            $table->integer('created_by');
+            $table->timestamps();
         });
     }
 

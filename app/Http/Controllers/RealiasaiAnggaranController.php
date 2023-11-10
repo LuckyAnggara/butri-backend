@@ -15,14 +15,14 @@ class RealiasaiAnggaranController extends BaseController
         $tahun = $request->input('tahun');
         $bulan = $request->input('bulan');
 
-     
+
         $data = Dipa::with(['realisasi' => function ($query) use ($bulan) {
             $query->where('bulan', '<=', $bulan);
         }])
-        ->when($tahun, function ($query, $tahun) {
+            ->when($tahun, function ($query, $tahun) {
                 return $query->where('tahun', $tahun);
-        })
-        ->get();
+            })
+            ->get();
 
         foreach ($data as $key => $value) {
             $total_realisasi = 0;
@@ -37,18 +37,16 @@ class RealiasaiAnggaranController extends BaseController
             $value->dp_saat_ini = $filteredCollection->dp ?? 0;
             $value->realisasi_saat_ini = $filteredCollection->realisasi ?? 0;
             $value->total_realisasi = $total_realisasi -   $value->realisasi_saat_ini;
-
-           
         }
-     
+
         return $this->sendResponse($data, 'Data fetched');
     }
 
     public function store(Request $request)
     {
-        
+
         $data = json_decode($request->getContent());
-        
+
         try {
             DB::beginTransaction();
             $realisasiAnggaran = RealisasiAnggaran::where('bulan', $data->head->currentMonth)->get();
@@ -59,6 +57,7 @@ class RealiasaiAnggaranController extends BaseController
             foreach ($data->detail as $key => $value) {
                 $result = RealisasiAnggaran::create([
                     'bulan' => $data->head->currentMonth,
+                    'tahun' => $data->head->currentYear,
                     'dipa_id' => $value->id,
                     'realisasi' => $value->realisasi_saat_ini,
                     'dp' =>  $value->dp_saat_ini,
@@ -72,5 +71,4 @@ class RealiasaiAnggaranController extends BaseController
             return $this->sendError($e->getMessage(), 'Failed to saved data');
         }
     }
-
 }

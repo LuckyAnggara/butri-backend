@@ -15,6 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('link');
+            $table->string('ttd_name');
+            $table->string('nip_name');
+            $table->string('location_name');
+            $table->integer('created_by');
             $table->timestamps();
         });
     }

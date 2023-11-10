@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('realisasi_anggarans', function (Blueprint $table) {
             $table->id();
             $table->string('bulan');
+            $table->string('tahun');
             $table->integer('dipa_id');
             $table->double('realisasi');
             $table->double('dp');

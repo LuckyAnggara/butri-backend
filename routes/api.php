@@ -6,6 +6,7 @@ use App\Http\Controllers\CapaianIndikatorKegiatanUtamaController;
 use App\Http\Controllers\CapaianIndikatorKinerjaKegiatanController;
 use App\Http\Controllers\CapaianProgramUnggulanController;
 use App\Http\Controllers\DashboardKepegawaianController;
+use App\Http\Controllers\DashboardKeuanganController;
 use App\Http\Controllers\DashboardWilayahController;
 use App\Http\Controllers\DataPengawasanController;
 use App\Http\Controllers\DipaController;
@@ -77,7 +78,7 @@ Route::resource('indikator-kinerja-utama', IndikatorKinerjaUtamaController::clas
 Route::resource('indikator-kinerja-kegiatan', IndikatorKinerjaKegiatanController::class);
 Route::resource('program-unggulan', ProgramUnggulanController::class);
 
-Route::resource('laporan',LaporanController::class);
+Route::resource('laporan', LaporanController::class);
 Route::get(
     'laporan-generate',
     [LaporanController::class, 'generate']
@@ -109,6 +110,7 @@ Route::resource('ikpa', IkpaController::class);
 // WILAYAH
 Route::resource('data-pengawasan', DataPengawasanController::class);
 Route::resource('dashboard-wilayah', DashboardWilayahController::class);
+Route::resource('dashboard-keuangan', DashboardKeuanganController::class);
 
 // ALL 
 Route::resource('kegiatan', KegiatanController::class);

@@ -19,13 +19,18 @@ class Dipa extends Model
         'created_by',
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime:F Y',
+    ];
+
     public function realisasi()
     {
         return $this->hasMany(RealisasiAnggaran::class, 'dipa_id', 'id');
     }
 
-    public function group(){
-        return $this->hasOne(GroupUnit::class,'id','group_id');
+    public function group()
+    {
+        return $this->hasOne(GroupUnit::class, 'id', 'group_id');
     }
 
     public function totalRealisasi($bulan = null)
@@ -41,6 +46,4 @@ class Dipa extends Model
     {
         return $this->totalRealisasi($tanggalReferensi);
     }
-
-
 }

@@ -28,7 +28,9 @@ class DatabaseSeeder extends Seeder
             UnitGroupSeeder::class,
             IKUSeeder::class,
             IKKSeeder::class,
-            DipaSeeder::class
+            DipaSeeder::class,
+            ProgramUnggulanSeeder::class,
+            JenisPengawasanSeeder::class,
             // EmployeSeeder::class,
         ]);
     }
