@@ -8,10 +8,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CapaianIndikatorKinerjaKegiatan extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
         'ikk_id',
+        'tahun',
+        'bulan',
         'realisasi',
         'analisa',
         'kegiatan',

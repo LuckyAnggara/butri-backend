@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CapaianIndikatorKegiatanUtama;
+use App\Models\IndikatorKinerjaUtama;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -10,28 +11,41 @@ class CapaianIndikatorKegiatanUtamaController extends BaseController
 {
     public function index(Request $request)
     {
+
         $perPage = $request->input('limit', 1000);
         $name = $request->input('query');
         $tahun = $request->input('tahun');
 
-        $data = CapaianIndikatorKegiatanUtama::with('iku')
-            ->when($tahun, function ($query, $tahun) {
+
+        $data = IndikatorKinerjaUtama::when($tahun, function ($query, $tahun) {
+            return $query->whereYear('created_at', $tahun);
+        })
+            ->get();
+
+        foreach ($data as $key => $value) {
+            $value->realisasi = CapaianIndikatorKegiatanUtama::where('iku_id', $value->id)->when($tahun, function ($query, $tahun) {
                 return $query->whereYear('created_at', $tahun);
             })
-            ->when($name, function ($query, $name) {
-                return $query->where('realisasi', 'like', '%' . $name . '%');
-                $query->orWhere('analisa', 'like', '%' . $name . '%');
-            })
-            ->latest()
-            ->paginate($perPage);
+                ->first();
+        }
+
         return $this->sendResponse($data, 'Data fetched');
     }
 
     public function store(Request $request)
     {
+
         $data = json_decode($request->getContent());
+
+        $exist = CapaianIndikatorKegiatanUtama::where('iku_id', $data->iku->id)->whereYear('created_at', $data->tahun)->first();
+
         try {
             DB::beginTransaction();
+
+            if ($exist) {
+                $exist->delete();
+            }
+
             $result = CapaianIndikatorKegiatanUtama::create([
                 'iku_id' => $data->iku->id,
                 'realisasi' => $data->realisasi,
@@ -51,10 +65,13 @@ class CapaianIndikatorKegiatanUtamaController extends BaseController
 
     public function show($id)
     {
-        $result = CapaianIndikatorKegiatanUtama::where('id', $id)
-            ->with('iku')
-            ->first();
-        if ($result) {
+
+
+        $result = IndikatorKinerjaUtama::where('id', $id)->first();
+
+        $detail = CapaianIndikatorKegiatanUtama::where('iku_id', $id)->get();
+        $result->capaian = $detail;
+        if ($detail) {
             return $this->sendResponse($result, 'Data fetched');
         }
         return $this->sendError('Data not found');

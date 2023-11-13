@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class IndikatorKinerjaUtama extends Model
 {
     use HasFactory, SoftDeletes;
+
     protected $fillable = [
         'name',
         'target',
@@ -20,6 +21,6 @@ class IndikatorKinerjaUtama extends Model
 
     public function capaian()
     {
-        return $this->hasOne(CapaianIndikatorKegiatanUtama::class, 'iku_id', 'id')->withTrashed();
+        return $this->hasOne(CapaianIndikatorKegiatanUtama::class, 'iku_id', 'id');
     }
 }

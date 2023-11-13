@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\CapaianIndikatorKinerjaKegiatan;
+use App\Models\IndikatorKinerjaKegiatan;
+use App\Models\IndikatorKinerjaUtama;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class CapaianIndikatorKinerjaKegiatanController extends BaseController
 {
@@ -17,32 +20,43 @@ class CapaianIndikatorKinerjaKegiatanController extends BaseController
         $tahun = $request->input('tahun');
         $bulan = $request->input('bulan');
 
-        $data = CapaianIndikatorKinerjaKegiatan::with('ikk')
-            ->when($tahun, function ($query, $tahun) {
-                return $query->whereYear('created_at', $tahun);
-            })
-            ->when($bulan, function ($query, $bulan) {
-                return $query->whereMonth('created_at', $bulan);
-            })
+
+        $data = IndikatorKinerjaKegiatan::when($tahun, function ($query, $tahun) {
+            return $query->whereYear('created_at', $tahun);
+        })
             ->when($unit, function ($query, $unit) {
                 return $query->where('group_id', $unit);
+            })->get();
+
+        foreach ($data as $key => $value) {
+            $value->realisasi = CapaianIndikatorKinerjaKegiatan::where('ikk_id', $value->id)->when($tahun, function ($query, $tahun) {
+                return $query->where('tahun', $tahun);
             })
-            ->when($name, function ($query, $name) {
-                return $query->where('realisasi', 'like', '%' . $name . '%');
-                $query->orWhere('analisa', 'like', '%' . $name . '%');
-            })
-            ->latest()
-            ->paginate($perPage);
+                ->when($bulan, function ($query, $bulan) {
+                    return $query->where('bulan', $bulan);
+                })->first();
+        }
+
         return $this->sendResponse($data, 'Data fetched');
     }
 
     public function store(Request $request)
     {
         $data = json_decode($request->getContent());
+
+        $exist = CapaianIndikatorKinerjaKegiatan::where('ikk_id', $data->ikk->id)->where('bulan', $data->bulan)->where('tahun', $data->tahun)->first();
+
         try {
             DB::beginTransaction();
+
+            if ($exist) {
+                $exist->delete();
+            }
+
             $result = CapaianIndikatorKinerjaKegiatan::create([
                 'ikk_id' => $data->ikk->id,
+                'tahun' => $data->tahun,
+                'bulan' => $data->bulan,
                 'realisasi' => $data->realisasi,
                 'analisa' => $data->analisa,
                 'kegiatan' => $data->kegiatan,
@@ -61,10 +75,11 @@ class CapaianIndikatorKinerjaKegiatanController extends BaseController
 
     public function show($id)
     {
-        $result = CapaianIndikatorKinerjaKegiatan::where('id', $id)
-            ->with('ikk.group')
-            ->first();
-        if ($result) {
+        $result = IndikatorKinerjaKegiatan::where('id', $id)->first();
+
+        $detail = CapaianIndikatorKinerjaKegiatan::where('ikk_id', $id)->get();
+        $result->capaian = $detail;
+        if ($detail) {
             return $this->sendResponse($result, 'Data fetched');
         }
         return $this->sendError('Data not found');

@@ -29,7 +29,7 @@ class DashboardWilayahController extends BaseController
         $dataPengawasan = [];
 
         foreach ($jenisPengawasan as $key => $value) {
-            $result = DataPengawasan::where('jenis_pengawasan_id', $value->id)->where('unit_id', $unit_id)->whereYear('created_at', '<=', $tahun)
+            $result = DataPengawasan::where('jenis_pengawasan_id', $value->id)->where('unit_id', $unit_id)->where('tahun',  $tahun)
                 ->when($bulan, function ($query, $bulan) {
                     return $query->whereMonth('created_at', '<=', $bulan);
                 })
@@ -44,10 +44,16 @@ class DashboardWilayahController extends BaseController
                 return $query->where('tahun', $tahun);
             })
             ->first();
-        $realisasiAnggaran->total_realisasi = 0;
-        foreach ($realisasiAnggaran->realisasi as $key => $x) {
-            $realisasiAnggaran->total_realisasi += $x->realisasi;
-        };
+
+        if ($realisasiAnggaran) {
+            $realisasiAnggaran->total_realisasi = 0;
+            foreach ($realisasiAnggaran->realisasi as $key => $x) {
+                $realisasiAnggaran->total_realisasi += $x->realisasi;
+            };
+        } else {
+            $realisasiAnggaran;
+        }
+
 
 
         $data = [

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CapaianIndikatorKinerjaKegiatan;
+use App\Models\GroupUnit;
 use App\Models\IndikatorKinerjaKegiatan;
 use App\Models\Laporan;
 use Carbon\Carbon;
@@ -28,7 +29,6 @@ class LaporanController extends BaseController
         $data = json_decode($request->getContent());
         $name = $this->generate($data->parameter);
 
-
         try {
             DB::beginTransaction();
             $result = Laporan::create([
@@ -47,6 +47,33 @@ class LaporanController extends BaseController
         }
     }
 
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+        try {
+            $data = Laporan::find($id);
+            if ($data) {
+                $data->delete();
+                $path = public_path($data->link);
+                if (file_exists($path)) {
+                    unlink($path);
+                } else {
+                    echo "File does not exist.";
+                }
+
+                DB::commit();
+
+                return $this->sendResponse($data, 'Data berhasil dihapus', 200);
+            } else {
+                return $this->sendError('', 'Data tidak ditemukan', 404);
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError('Terjadi kesalahan', $e->getMessage(), 500);
+        }
+    }
+
+
     public function download($id)
     {
 
@@ -57,97 +84,76 @@ class LaporanController extends BaseController
         return Response::download($path, $fileName);
     }
 
+    public function debug()
+    {
+
+
+        $tahun = 2023;
+        $bulan = 11;
+        $group = 2;
+
+        $groupAll = GroupUnit::all();
+        foreach ($groupAll as $key => $x) {
+            if ($x->id != 8) {
+                $result = IndikatorKinerjaKegiatan::whereYear('created_at', $tahun)->where('group_id', $x->id)->get();
+                foreach ($result as $key => $value) {
+                    $value->realisasi = CapaianIndikatorKinerjaKegiatan::where('ikk_id', $value->id)->where('tahun', $tahun)->where('bulan', $bulan)
+                        ->first();
+                }
+                $x->ikk = $result;
+            }
+        }
+
+        return $groupAll;
+    }
+
     public function generate($paramater)
     {
         $phpWord = new \PhpOffice\PhpWord\PhpWord();
-        $section = $phpWord->addSection();
-        $header = array('size' => 16, 'bold' => true);
+
+
+        $sectionStyle = array(
+            'orientation' => 'landscape',
+            'marginTop' => 600,
+        );
+        $section = $phpWord->addSection($sectionStyle);
+        $header = array('size' => 12, 'bold' => true);
 
         //CAPAIAN IKK
-
-        $section->addTextBreak(1);
-        $section->addText(htmlspecialchars('Fancy table'), $header);
+        $dataIKK = $this->laporanIKK($paramater);
 
         $styleTable = array('borderSize' => 6, 'borderColor' => '006699', 'cellMargin' => 80);
         $styleFirstRow = array('borderBottomSize' => 18, 'borderBottomColor' => '0000FF', 'bgColor' => '66BBFF');
         $styleCell = array('valign' => 'center');
-        $styleCellBTLR = array('valign' => 'center', 'textDirection' => \PhpOffice\PhpWord\Style\Cell::TEXT_DIR_BTLR);
         $fontStyle = array('bold' => true, 'align' => 'center');
-        $phpWord->addTableStyle('Fancy Table', $styleTable, $styleFirstRow);
-        $table = $section->addTable('Fancy Table');
-        $table->addRow(900);
-        $table->addCell(2000, $styleCell)->addText(htmlspecialchars('Indikator'), $fontStyle);
-        $table->addCell(500, $styleCell)->addText(htmlspecialchars('Target'), $fontStyle);
-        $table->addCell(500, $styleCell)->addText(htmlspecialchars('Realisasi'), $fontStyle);
-        $table->addCell(2000, $styleCell)->addText(htmlspecialchars('Analisis'), $fontStyle);
-        $table->addCell(2000, $styleCellBTLR)->addText(htmlspecialchars('Kendala / Hambatan'), $fontStyle);
-
-        $dataIKK = $this->laporanIKK($paramater);
-
 
         foreach ($dataIKK as $key => $value) {
+            $section->addTextBreak(1);
+            $section->addText(htmlspecialchars('Capaian Indikator Kinerja Kegiatan ' . $value->name), $header);
+            $phpWord->addTableStyle('Indikator Kinerja Kegiatan', $styleTable, $styleFirstRow);
+            $table = $section->addTable('Indikator Kinerja Kegiatan');
             $table->addRow();
-            $table->addCell(2000)->addText(htmlspecialchars($value->name));
-            $table->addCell(500)->addText(htmlspecialchars($value->target));
-            $table->addCell(500)->addText($value->capaian->realisasi ?? '');
-            $table->addCell(2000)->addText(htmlspecialchars($value->capaian->analisis ?? ''));
-            $table->addCell(2000)->addText(htmlspecialchars($value->capaian->kendala ?? ''));
+            $table->addCell(4000, $styleCell)->addText(htmlspecialchars('Indikator'), $fontStyle);
+            $table->addCell(2000, $styleCell)->addText(htmlspecialchars('Target'), $fontStyle);
+            $table->addCell(4000, $styleCell)->addText(htmlspecialchars('Realisasi'), $fontStyle);
+            $table->addCell(4000, $styleCell)->addText(htmlspecialchars('Analisis'), $fontStyle);
+            $table->addCell(4000, $styleCell)->addText(htmlspecialchars('Kendala / Hambatan'), $fontStyle);
+
+
+            foreach ($value->ikk as $key => $ikk) {
+                $table->addRow();
+                $table->addCell(4000)->addText(htmlspecialchars($ikk->name));
+                $table->addCell(2000)->addText(htmlspecialchars($ikk->target));
+                $table->addCell(3000)->addText(htmlspecialchars($ikk->realisasi->realisasi ?? '-'));
+                $table->addCell(3000)->addText(htmlspecialchars($ikk->realisasi->analisa ?? '-'));
+                // $table->addCell(3000)->addText(\PhpOffice\PhpWord\IOFactory::load($ikk->realisasi->kendala ?? '', 'HTML'));
+                $table->addCell(4000)->addText(htmlspecialchars($ikk->realisasi->kendala ?? ''));
+            }
+
+
+            $section->addPageBreak();
         }
-        // for ($i = 1; $i <= 8; $i++) {
-        //     $table->addRow();
-        //     $table->addCell(2000)->addText(htmlspecialchars("Cell {$i}"));
-        //     $table->addCell(2000)->addText(htmlspecialchars("Cell {$i}"));
-        //     $table->addCell(2000)->addText(htmlspecialchars("Cell {$i}"));
-        //     $table->addCell(2000)->addText(htmlspecialchars("Cell {$i}"));
-        //     $text = (0 == $i % 2) ? 'X' : '';
-        //     $table->addCell(500)->addText(htmlspecialchars($text));
-        // }
 
-        // 3. colspan (gridSpan) and rowspan (vMerge)
-
-        $section->addPageBreak();
-        $section->addText(htmlspecialchars('Table with colspan and rowspan'), $header);
-
-        $styleTable = array('borderSize' => 6, 'borderColor' => '999999');
-        $cellRowSpan = array('vMerge' => 'restart', 'valign' => 'center', 'bgColor' => 'FFFF00');
-        $cellRowContinue = array('vMerge' => 'continue');
-        $cellColSpan = array('gridSpan' => 2, 'valign' => 'center');
-        $cellHCentered = array('align' => 'center');
-        $cellVCentered = array('valign' => 'center');
-
-        $phpWord->addTableStyle('Colspan Rowspan', $styleTable);
-        $table = $section->addTable('Colspan Rowspan');
-
-        $table->addRow();
-
-        $cell1 = $table->addCell(2000, $cellRowSpan);
-        $textrun1 = $cell1->addTextRun($cellHCentered);
-        $textrun1->addText(htmlspecialchars('A'));
-        $textrun1->addFootnote()->addText(htmlspecialchars('Row span'));
-
-        $cell2 = $table->addCell(4000, $cellColSpan);
-        $textrun2 = $cell2->addTextRun($cellHCentered);
-        $textrun2->addText(htmlspecialchars('B'));
-        $textrun2->addFootnote()->addText(htmlspecialchars('Colspan span'));
-
-        $table->addCell(2000, $cellRowSpan)->addText(htmlspecialchars('E'), null, $cellHCentered);
-
-        $table->addRow();
-        $table->addCell(null, $cellRowContinue);
-        $table->addCell(2000, $cellVCentered)->addText(htmlspecialchars('C'), null, $cellHCentered);
-        $table->addCell(2000, $cellVCentered)->addText(htmlspecialchars('D'), null, $cellHCentered);
-        $table->addCell(null, $cellRowContinue);
-
-        // 4. Nested table
-
-        $section->addTextBreak(2);
-        $section->addText(htmlspecialchars('Nested table in a centered and 50% width table.'), $header);
-
-        $table = $section->addTable(array('width' => 50 * 50, 'unit' => 'pct', 'align' => 'center'));
-        $cell = $table->addRow()->addCell();
-        $cell->addText(htmlspecialchars('This cell contains nested table.'));
-        $innerCell = $cell->addTable(array('align' => 'center'))->addRow()->addCell();
-        $innerCell->addText(htmlspecialchars('Inside nested table'));
 
         // Save file
         $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
@@ -157,6 +163,8 @@ class LaporanController extends BaseController
         $objWriter->save(public_path("\laporan\\" . $name));
 
         return $name;
+
+
 
         // try {
         //     $time = Carbon::now()->format('YmdHis');
@@ -185,13 +193,36 @@ class LaporanController extends BaseController
         $bulan = $parameter->bulan;
         $group = $parameter->group;
 
+        $groupAll = GroupUnit::whereNot('id', 8)
+            ->get();
+        foreach ($groupAll as $key => $x) {
+            $result = IndikatorKinerjaKegiatan::whereYear('created_at', $tahun)->where('group_id', $x->id)->get();
+            foreach ($result as $key => $value) {
+                $value->realisasi = CapaianIndikatorKinerjaKegiatan::where('ikk_id', $value->id)->where('tahun', $tahun)->where('bulan', $bulan)
+                    ->first();
+            }
+            $x->ikk = $result;
+        }
+        return $groupAll;
+    }
 
-        $ikk = IndikatorKinerjaKegiatan::whereYear('created_at', $tahun)->where('group_id', $group)->get();
+    public function view()
+    {
+        $tahun = 2023;
+        $bulan = 11;
+        $group = 1;
 
-        foreach ($ikk as $key => $value) {
-            $value->capaian = CapaianIndikatorKinerjaKegiatan::where('ikk_id', $value->id)->whereYear('created_at', $tahun)->whereMonth('created_at', $bulan)->first();
+        $groupAll = GroupUnit::whereNot('id', 8)
+            ->get();
+        foreach ($groupAll as $key => $x) {
+            $result = IndikatorKinerjaKegiatan::whereYear('created_at', $tahun)->where('group_id', $x->id)->get();
+            foreach ($result as $key => $value) {
+                $value->realisasi = CapaianIndikatorKinerjaKegiatan::where('ikk_id', $value->id)->where('tahun', $tahun)->where('bulan', $bulan)
+                    ->first();
+            }
+            $x->ikk = $result;
         }
 
-        return $ikk;
+        return view('laporan.view', ['groups' => $groupAll]);
     }
 }

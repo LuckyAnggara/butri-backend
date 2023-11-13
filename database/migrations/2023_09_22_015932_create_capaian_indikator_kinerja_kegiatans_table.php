@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('capaian_indikator_kinerja_kegiatans', function (Blueprint $table) {
             $table->id();
             $table->integer('ikk_id');
+            $table->string('tahun');
+            $table->string('bulan');
             $table->string('realisasi');
             $table->text('analisa')->nullable();
             $table->text('kegiatan')->nullable();
