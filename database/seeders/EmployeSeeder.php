@@ -24,7 +24,7 @@ class EmployeSeeder extends Seeder
                 'tmt_jabatan' => '2020-03-08',
                 'tmt_pensiun' => null,
                 'eselon_id' => 1,
-                'unit_id' => null,
+                'unit_id'=>random_int(1, 8),
             ],
             [
                 'nip' => '196211251989031002',
@@ -39,7 +39,7 @@ class EmployeSeeder extends Seeder
                 'tmt_jabatan' => '2022-11-03',
                 'tmt_pensiun' => null,
                 'eselon_id' => 2,
-                'unit_id' => null,
+                'unit_id'=>random_int(1, 8),
             ],
             [
                 'nip' => '197110171995031001',
@@ -54,7 +54,7 @@ class EmployeSeeder extends Seeder
                 'tmt_jabatan' => '2023-01-02',
                 'tmt_pensiun' => null,
                 'eselon_id' => 3,
-                'unit_id' => null,
+                'unit_id'=>random_int(1, 8),
             ],
             [
                 'nip' => '196310011991032001',
@@ -69,7 +69,7 @@ class EmployeSeeder extends Seeder
                 'tmt_jabatan' => '2022-03-10',
                 'tmt_pensiun' => null,
                 'eselon_id' => 7,
-                'unit_id' => null,
+                'unit_id'=>random_int(1, 8),
             ],
             [
                 'nip' => '196404251990011001',
@@ -84,7 +84,7 @@ class EmployeSeeder extends Seeder
                 'tmt_jabatan' => '2022-03-10',
                 'tmt_pensiun' => null,
                 'eselon_id' => 6,
-                'unit_id' => null,
+                'unit_id'=>random_int(1, 8),
             ],
             [
                 'nip' => '196403111994032007',
@@ -99,7 +99,7 @@ class EmployeSeeder extends Seeder
                 'tmt_jabatan' => '2023-01-02',
                 'tmt_pensiun' => null,
                 'eselon_id' => 1,
-                'unit_id' => null,
+                'unit_id'=>random_int(1, 8),
             ],
             [
                 'nip' => '196911281997031001',
@@ -114,7 +114,7 @@ class EmployeSeeder extends Seeder
                 'tmt_jabatan' => '2023-01-02',
                 'tmt_pensiun' => null,
                 'eselon_id' => 5,
-                'unit_id' => null,
+                'unit_id'=>random_int(1, 8),
             ],
             [
                 'nip' => '197004301991031001',
@@ -129,7 +129,7 @@ class EmployeSeeder extends Seeder
                 'tmt_jabatan' => '2022-03-10',
                 'tmt_pensiun' => null,
                 'eselon_id' => 4,
-                'unit_id' => null,
+                'unit_id'=>random_int(1, 8),
             ],
             [
                 'nip' => '197010091998032001',
@@ -144,7 +144,7 @@ class EmployeSeeder extends Seeder
                 'tmt_jabatan' => '2021-01-01',
                 'tmt_pensiun' => null,
                 'eselon_id' => 6,
-                'unit_id' => null,
+                'unit_id'=>random_int(1, 8),
             ],
             [
                 'nip' => '197006061998032001',
@@ -159,7 +159,7 @@ class EmployeSeeder extends Seeder
                 'tmt_jabatan' => '2021-08-17',
                 'tmt_pensiun' => null,
                 'eselon_id' => 7,
-                'unit_id' => null,
+                'unit_id'=>random_int(1, 8),
             ],
             [
                 'nip' => '197012181999031002',
@@ -174,7 +174,7 @@ class EmployeSeeder extends Seeder
                 'tmt_jabatan' => '2021-08-17',
                 'tmt_pensiun' => null,
                 'eselon_id' => 5,
-                'unit_id' => null,
+                'unit_id'=>random_int(1, 8),
             ],
             [
                 'nip' => '196406211993031001',
@@ -189,7 +189,7 @@ class EmployeSeeder extends Seeder
                 'tmt_jabatan' => '2023-04-03',
                 'tmt_pensiun' => null,
                 'eselon_id' => 3,
-                'unit_id' => null,
+                'unit_id'=>random_int(1, 8),
             ],
             [
                 'nip' => '196710271993031001',
@@ -204,7 +204,7 @@ class EmployeSeeder extends Seeder
                 'tmt_jabatan' => '2021-08-17',
                 'tmt_pensiun' => null,
                 'eselon_id' => 5,
-                'unit_id' => null,
+                'unit_id'=>random_int(1, 8),
             ],
             [
                 'nip' => '196507201994031001',
@@ -219,7 +219,7 @@ class EmployeSeeder extends Seeder
                 'tmt_jabatan' => '2023-04-03',
                 'tmt_pensiun' => null,
                 'eselon_id' => 5,
-                'unit_id' => null,
+                'unit_id'=>random_int(1, 8),
             ],
             [
                 'nip' => '197508291999032001',
@@ -234,7 +234,7 @@ class EmployeSeeder extends Seeder
                 'tmt_jabatan' => '2021-08-17',
                 'tmt_pensiun' => null,
                 'eselon_id' => 6,
-                'unit_id' => null,
+                'unit_id'=>random_int(1, 8),
             ],
             [
                 'nip' => '197107231997031001',
@@ -249,7 +249,7 @@ class EmployeSeeder extends Seeder
                 'tmt_jabatan' => '2021-08-17',
                 'tmt_pensiun' => null,
                 'eselon_id' => 6,
-                'unit_id' => null,
+                'unit_id'=>random_int(1, 8),
             ],
             [
                 'nip' => '197003271998032001',
@@ -264,7 +264,7 @@ class EmployeSeeder extends Seeder
                 'tmt_jabatan' => '2022-10-03',
                 'tmt_pensiun' => null,
                 'eselon_id' => 3,
-                'unit_id' => null,
+                'unit_id'=>random_int(1, 8),
             ],
             [
                 'nip' => '197203051999031007',
@@ -279,7 +279,7 @@ class EmployeSeeder extends Seeder
                 'tmt_jabatan' => '2019-02-27',
                 'tmt_pensiun' => null,
                 'eselon_id' => 1,
-                'unit_id' => null,
+                'unit_id'=>random_int(1, 8),
             ],
             [
                 'nip' => '196905061998031001',
@@ -294,7 +294,7 @@ class EmployeSeeder extends Seeder
                 'tmt_jabatan' => '2022-10-03',
                 'tmt_pensiun' => null,
                 'eselon_id' => 4,
-                'unit_id' => null,
+                'unit_id'=>random_int(1, 8),
             ],
             [
                 'nip' => '196405151985031016',
@@ -309,7 +309,7 @@ class EmployeSeeder extends Seeder
                 'tmt_jabatan' => '2021-12-31',
                 'tmt_pensiun' => null,
                 'eselon_id' => 1,
-                'unit_id' => null,
+                'unit_id'=>random_int(1, 8),
             ],
             [
                 'nip' => '197410112001121001',
@@ -324,7 +324,7 @@ class EmployeSeeder extends Seeder
                 'tmt_jabatan' => '2021-08-17',
                 'tmt_pensiun' => null,
                 'eselon_id' => 2,
-                'unit_id' => null,
+                'unit_id'=>random_int(1, 8),
             ],
             [
                 'nip' => '196906071992032001',
@@ -339,7 +339,7 @@ class EmployeSeeder extends Seeder
                 'tmt_jabatan' => '2021-01-01',
                 'tmt_pensiun' => null,
                 'eselon_id' => 1,
-                'unit_id' => null,
+                'unit_id'=>random_int(1, 8),
             ],
             // Tambahkan data pegawai lainnya di sini
         ];

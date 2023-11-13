@@ -20,8 +20,36 @@ class DashboardKeuanganController extends BaseController
 
         $tahun = $request->input('tahun');
         $bulan = $request->input('bulan');
+        $dipa = Dipa::with('realisasi')->where('tahun', $tahun)->get();
+        $realisasi = RealisasiAnggaran::where('tahun', $tahun)->where('bulan', $bulan)->get();
 
+        $totalPagu = 0;
+        $totalRealisasi = 0;
+        foreach ($dipa as $key => $value) {
+            $totalPagu += $value->pagu;
+        }
 
+         
+            if($realisasi){
+                foreach ($realisasi as $key => $x) {
+                    $totalRealisasi += $x->realisasi;
+
+                }
+            }
+
+        $result = [
+            'totalPagu' => $totalPagu,
+            'totalRealisasi'    => $totalRealisasi,
+        ];
+
+        return $this->sendResponse($result, 'Data fetched');
+    }
+
+    public function index2(Request $request)
+    {
+
+        $tahun = $request->input('tahun');
+        $bulan = $request->input('bulan');
         $dipa = Dipa::with('realisasi')->get();
         foreach ($dipa as $key => $value) {
             $value->label = $value->name;
