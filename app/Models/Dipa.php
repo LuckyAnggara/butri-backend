@@ -12,6 +12,7 @@ class Dipa extends Model
 
     protected $fillable = [
         'pagu',
+        'jenis',
         'tahun',
         'name',
         'kode',

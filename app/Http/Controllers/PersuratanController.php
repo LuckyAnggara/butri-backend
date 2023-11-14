@@ -12,30 +12,30 @@ class PersuratanController extends BaseController
     public function index(Request $request)
     {
         $tahun = $request->input('tahun');
-        $bulan = $request->input('bulan');
-        $group = $request->input('unit');
-
-        $data = Persuratan::with('group')->when($tahun, function ($query, $tahun) {
-            return $query->where('tahun', $tahun);
-        })
-            ->when($group, function ($query, $group) {
-                return $query->where('group_id', $group);
-            })
-            ->when($bulan, function ($query, $bulan) {
-                return $query->where('bulan', $bulan);
-            })
-            ->orderBy('bulan', 'asc')
-            ->get();
-
-        foreach ($data as  $value) {
-            $bulan = Carbon::createFromDate(2023, $value->bulan, 1)->format('F');
-            $value->bulan_name = $bulan;
+        $result = [];
+        for ($i = 1; $i < 13; $i++) {
+            $bulan = Carbon::createFromDate(2023, $i, 1)->format('F');
+            $data = Persuratan::where('tahun', $tahun)->where('bulan', $i)->first();
+            if ($data) {
+                $result[] = array(
+                    'tahun' => $tahun,
+                    'bulan_name' =>  $bulan,
+                    'bulan' => $i,
+                    'surat_masuk' => $data->surat_masuk ?? 0,
+                    'surat_keluar' => $data->surat_keluar ?? 0,
+                );
+            } else {
+                $result[] = array(
+                    'tahun' => $tahun,
+                    'bulan_name' =>   $bulan,
+                    'bulan' => $i,
+                    'surat_masuk' => 0,
+                    'surat_keluar' => 0,
+                );
+            }
         }
 
-        for ($i = 1; $i <= 12; $i++) {
-        }
-
-        return $this->sendResponse($data, 'Data fetched');
+        return $this->sendResponse($result, 'Data fetched');
     }
 
     public function store(Request $request)
@@ -51,7 +51,7 @@ class PersuratanController extends BaseController
                     'tahun' => $data->tahun,
                     'surat_masuk' => $data->surat_masuk,
                     'surat_keluar' => $data->surat_keluar,
-                    'group_id' => $data->group_id,
+                    // 'group_id' => $data->group_id,
                     'created_by' =>  $data->created_by,
                 ]);
                 DB::commit();

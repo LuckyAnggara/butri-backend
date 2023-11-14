@@ -12,6 +12,85 @@
 <body>
     <div class="container mt-5">
 
+        <h5>Realisasi Per Jenis Kegiatan</h5>
+
+        <table class="table table-bordered mb-5">
+            <thead>
+                <tr class="table-success">
+                    <th>#</th>
+                    <th>Kode</th>
+                    <th>Kegiatan</th>
+                    <th>Unit</th>
+                    <th>Pagu</th>
+                    <th>Realisasi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($realisasiKegiatan as $kegiatan)
+                <tr>
+                    <td class="lh-1">{{$loop->iteration}}</td>
+                    <td class="lh-1">{{$kegiatan->kode}}</td>
+                    <td class="lh-1">{{$kegiatan->name}}</td>
+                    <td class="lh-1">{{$kegiatan->group->name}}</td>
+                    <td class="lh-1">{{$kegiatan->pagu}}</td>
+                    <td class="lh-1">{{$kegiatan->realisasi_saat_ini}}</td>
+                </tr>
+                @endforeach
+
+            </tbody>
+        </table>
+
+        <h5>Realisasi Per Jenis Belanja</h5>
+        <table class="table table-bordered mb-5">
+            <thead>
+                <tr class="table-success">
+                    <th>#</th>
+                    <th>Kegiatan</th>
+                    <th>Pagu</th>
+                    <th>Realisasi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($realisasiBelanja as $belanja)
+                <tr>
+                    <td class="lh-1">{{$loop->iteration}}</td>
+                    <td class="lh-1">{{$belanja->name}}</td>
+                    <td class="lh-1">{{$belanja->pagu}}</td>
+                    <td class="lh-1">{{$belanja->realisasi_saat_ini}}</td>
+                </tr>
+                @endforeach
+
+            </tbody>
+        </table>
+
+        <h5>Indikator Kinerja Utama</h5>
+        <table class="table table-bordered mb-5">
+            <thead>
+                <tr class="table-success">
+                    <th>#</th>
+                    <th>Indikator</th>
+                    <th>Target</th>
+                    <th>Realisasi</th>
+                    <th>Analisa</th>
+                    <th>Kendala</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($realisasiIKU as $iku)
+                <tr>
+                    <td class="lh-1">{{$loop->iteration}}</td>
+                    <td class="lh-1">{{$iku->name}}</td>
+                    <td class="lh-1">{{$iku->target}}</td>
+                    <td class="lh-1">{!!$iku->realisasi->realisasi ?? '-' !!}</td>
+                    <td class="lh-sm">{!! nl2br(e($iku->realisasi->analisa ?? '')) !!} </td>
+                    <td class="lh-1">{!! $iku->realisasi->kendala ?? ''!!}</td>
+                </tr>
+                @endforeach
+
+            </tbody>
+        </table>
+
+
         @foreach ($groups as $group)
 
         <h5>Indikator Kinerja Kegiatan {{ $group->name }}</h5>
@@ -32,9 +111,9 @@
                     <td class="lh-1">{{$loop->iteration}}</td>
                     <td class="lh-1">{{$ikk->name}}</td>
                     <td class="lh-1">{{$ikk->target}}</td>
-                    <td class="lh-1">{!!$ikk->realisasi->realisasi ?? '-' !!}</td>
+                    <td class="lh-1">{!! nl2br(e($ikk->realisasi->realisasi ?? '-')) !!}</td>
                     <td class="lh-sm">{!! nl2br(e($ikk->realisasi->analisa ?? '')) !!} </td>
-                    <td class="lh-1">{!! $ikk->realisasi->kendala ?? ''!!}</td>
+                    <td class="lh-1">{!! nl2br(e($ikk->realisasi->kendala ?? ''))!!}</td>
                 </tr>
                 @endforeach
 

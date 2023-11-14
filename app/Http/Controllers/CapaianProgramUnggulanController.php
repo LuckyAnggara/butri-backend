@@ -56,9 +56,9 @@ class CapaianProgramUnggulanController extends BaseController
                 $kegiatan = Kegiatan::create([
                     'name' => $data->name,
                     'tempat' => $data->tempat,
-                    'output' => $data->output,
+                    'output' => nl2br(trim($data->output)),
                     'jenis_kegiatan' => $data->jenis_kegiatan,
-                    'notes' => $data->notes,
+                    'notes' => nl2br(trim($data->notes)),
                     'start_at' => $startDate,
                     'end_at' => $endDate,
                     'unit_id' => $data->unit_id,

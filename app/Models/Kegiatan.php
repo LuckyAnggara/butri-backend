@@ -43,6 +43,11 @@ class Kegiatan extends Model
         return count($this->list);
     }
 
+    public function unit()
+    {
+        return $this->hasOne(Unit::class, 'id', 'unit_id');
+    }
+
     public function list()
     {
         $data = $this->hasMany(CapaianProgramUnggulan::class, 'kegiatan_id', 'id');

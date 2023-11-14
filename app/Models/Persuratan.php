@@ -15,7 +15,7 @@ class Persuratan extends Model
         'tahun',
         'surat_masuk',
         'surat_keluar',
-        'group_id',
+        // 'group_id',
         'created_by',
     ];
 

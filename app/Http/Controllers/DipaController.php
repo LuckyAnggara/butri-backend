@@ -16,11 +16,11 @@ class DipaController extends BaseController
         $data = Dipa::with('group')->when($tahun, function ($query, $tahun) {
             return $query->where('tahun', $tahun);
         })
-        ->when($unit, function ($query, $unit) {
-            return $query->where('group_id', $unit);
-        })
-        ->get();
-      
+            ->when($unit, function ($query, $unit) {
+                return $query->where('group_id', $unit);
+            })
+            ->get();
+
         return $this->sendResponse($data, 'Data fetched');
     }
 
@@ -30,11 +30,12 @@ class DipaController extends BaseController
         try {
             DB::beginTransaction();
             $result = Dipa::create([
-                'kode' => $data->kode,
+                'kode' => $data->kode ?? 0,
                 'tahun' => $data->tahun,
+                'jenis' => $data->jenis,
                 'name' =>  $data->name,
                 'pagu' =>  $data->pagu,
-                'group_id' =>  $data->group_id,
+                'group_id' =>  $data->group_id ?? 1,
                 'created_by' => $data->created_by,
             ]);
             DB::commit();
@@ -45,7 +46,7 @@ class DipaController extends BaseController
         }
     }
 
-     public function update(Request $request, $id)
+    public function update(Request $request, $id)
     {
         $data = json_decode($request->getContent());
 
@@ -57,7 +58,7 @@ class DipaController extends BaseController
                 'kode' => $data->kode,
                 'tahun' => $data->tahun,
                 'name' =>  $data->name,
-                'group_id'=> $data->group_id,
+                'group_id' => $data->group_id,
                 'pagu' =>  $data->pagu,
                 'created_by' => $data->created_by,
             ]);

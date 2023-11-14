@@ -85,7 +85,7 @@ Route::get(
 );
 Route::get(
     'laporan-debug',
-    [LaporanController::class, 'debug']
+    [LaporanController::class, 'laporanAnggaran']
 );
 Route::get(
     'laporan-download/{id}',

@@ -49,10 +49,10 @@ class CapaianIndikatorKegiatanUtamaController extends BaseController
             $result = CapaianIndikatorKegiatanUtama::create([
                 'iku_id' => $data->iku->id,
                 'realisasi' => $data->realisasi,
-                'analisa' => $data->analisa,
-                'kegiatan' => $data->kegiatan,
-                'kendala' => $data->kendala,
-                'hambatan' => $data->hambatan,
+                'analisa' => nl2br(trim($data->analisa)),
+                'kegiatan' => nl2br(trim($data->kegiatan)),
+                'kendala' => nl2br(trim($data->kendala)),
+                'hambatan' => nl2br(trim($data->hambatan)),
                 'created_by' =>  $data->created_by,
             ]);
             DB::commit();

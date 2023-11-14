@@ -53,11 +53,11 @@ class RealiasaiAnggaranController extends BaseController
             foreach ($realisasiAnggaran as $key => $value) {
                 $value->delete();
             }
-
             foreach ($data->detail as $key => $value) {
                 $result = RealisasiAnggaran::create([
                     'bulan' => $data->head->currentMonth,
                     'tahun' => $data->head->currentYear,
+                    'jenis' => $value->jenis,
                     'dipa_id' => $value->id,
                     'realisasi' => $value->realisasi_saat_ini,
                     'dp' =>  $value->dp_saat_ini,

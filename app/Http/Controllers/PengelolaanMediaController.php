@@ -47,8 +47,6 @@ class PengelolaanMediaController extends BaseController
     public function update(Request $request, $id)
     {
         $data = json_decode($request->getContent());
-
-
         try {
             DB::beginTransaction();
             $result = PengelolaanMedia::findOrFail($id);

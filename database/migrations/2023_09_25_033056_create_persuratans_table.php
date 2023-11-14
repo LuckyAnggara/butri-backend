@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('tahun');
             $table->double('surat_masuk');
             $table->double('surat_keluar');
-            $table->string('group_id');
+            $table->string('group_id')->nullable();
             $table->integer('created_by');
             $table->timestamps();
             $table->softDeletes();
