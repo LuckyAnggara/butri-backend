@@ -54,7 +54,7 @@ class LaporanController extends BaseController
             DB::beginTransaction();
             $result = Laporan::create([
                 'name' => $name,
-                'link' => "\laporan\\" . $name,
+                'link' => $name,
                 'ttd_name'  => $data->ttd_name,
                 'ttd_nip'  => $data->ttd_nip,
                 'ttd_location'  => $data->ttd_location,
@@ -568,7 +568,7 @@ class LaporanController extends BaseController
 
         $time = Carbon::now()->format('YmdHis');
         $name = 'laporan' . $time . '.docx';
-        $objWriter->save(public_path("\laporan\\" . $name));
+        $objWriter->save(public_path($name));
 
         return $name;
     }
