@@ -125,6 +125,10 @@ Route::resource('capaian-program-unggulan', CapaianProgramUnggulanController::cl
 Route::resource('capaian-iku', CapaianIndikatorKegiatanUtamaController::class);
 Route::resource('capaian-ikk', CapaianIndikatorKinerjaKegiatanController::class);
 
+// ADMIN
+Route::resource('user', AuthController::class);
+Route::post('/user/reset-password', [AuthController::class, 'reset']);
+
 Route::controller(AuthController::class)->group(function () {
     Route::post('register', 'register');
     Route::post('login', 'login');
