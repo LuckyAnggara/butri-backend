@@ -26,6 +26,7 @@ class DashboardWilayahController extends BaseController
         // Mengambil tanggal hari ini menggunakan Carbon
         // Mengambil tanggal hari ini menggunakan Carbon
         $jenisPengawasan = JenisPengawasan::all();
+
         $dataPengawasan = [];
 
         foreach ($jenisPengawasan as $key => $value) {

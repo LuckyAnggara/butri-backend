@@ -20,18 +20,17 @@ class DataPengawasanController extends BaseController
         $data = DataPengawasan::with('jenis')->when($tahun, function ($query, $tahun) {
             return $query->where('tahun', $tahun);
         })
-        ->when($bulan, function ($query, $bulan) {
-            return $query->where('bulan', $bulan);
-        })
-        ->when($unit, function ($query, $unit) {
-            return $query->where('unit_id', $unit);
-        })
+            ->when($bulan, function ($query, $bulan) {
+                return $query->where('bulan', $bulan);
+            })
+            ->when($unit, function ($query, $unit) {
+                return $query->where('unit_id', $unit);
+            })
 
-        ->orderBy('created_at', 'asc')
-        ->latest()
-        ->paginate($perPage);
+            ->orderBy('created_at', 'asc')
+            ->latest()
+            ->paginate($perPage);
         return $this->sendResponse($data, 'Data fetched');
-      
     }
 
     public function store(Request $request)
@@ -49,6 +48,7 @@ class DataPengawasanController extends BaseController
                 'sp_number' => $data->sp_number,
                 'sp_date' =>  $sp_date,
                 'jenis_pengawasan_id' =>  $data->jenis_pengawasan_id,
+                'lhp' => '',
                 'start_at' =>  $startDate,
                 'end_at' => $endDate,
                 'location' => $data->location,
@@ -66,7 +66,9 @@ class DataPengawasanController extends BaseController
 
     public function update(Request $request, $id)
     {
+
         $data = json_decode($request->getContent());
+
         try {
             DB::beginTransaction();
             $result = DataPengawasan::findOrFail($id);
@@ -83,6 +85,7 @@ class DataPengawasanController extends BaseController
                 'sp_date' =>  $sp_date,
                 'jenis_pengawasan_id' =>  $data->jenis_pengawasan_id,
                 'start_at' =>  $startDate,
+                'lhp' =>  $data->lhp,
                 'end_at' => $endDate,
                 'location' => $data->location,
                 'output' => $data->output,

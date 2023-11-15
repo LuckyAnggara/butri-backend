@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('tahun');
             $table->integer('dipa_id');
             $table->double('realisasi');
+            $table->string('jenis')->nullable();
             $table->double('dp');
             $table->integer('created_by');
             $table->timestamps();

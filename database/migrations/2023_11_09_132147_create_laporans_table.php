@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('link');
             $table->string('ttd_name');
-            $table->string('nip_name');
-            $table->string('location_name');
+            $table->string('ttd_nip');
+            $table->string('ttd_location');
             $table->integer('created_by');
             $table->timestamps();
         });

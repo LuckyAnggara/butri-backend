@@ -14,7 +14,6 @@ class ProgramUnggulan extends Model
         'name',
         'tahun',
         'target',
-        'satuan',
 
     ];
 
