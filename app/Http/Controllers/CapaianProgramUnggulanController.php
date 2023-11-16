@@ -18,9 +18,11 @@ class CapaianProgramUnggulanController extends BaseController
         $startDate = $request->input('start-date');
         $endDate = $request->input('end-date');
 
-        $data = CapaianProgramUnggulan::with('kegiatan', 'program')->when($unit, function ($query, $unit) {
-            return $query->where('unit_id', $unit);
-        })
+        $data = CapaianProgramUnggulan::select('capaian_program_unggulans.*')->with('kegiatan', 'program')
+            ->join('kegiatans', 'kegiatans.id', '=', 'capaian_program_unggulans.kegiatan_id')
+            ->when($unit, function ($query, $unit) {
+                return $query->where('capaian_program_unggulans.unit_id', $unit);
+            })
             ->when($name, function ($query, $name) {
                 return $query->where('kegiatans.name', 'like', '%' . $name . '%')
                     ->orWhere('kegiatans.output', 'like', '%' . $name . '%');
