@@ -34,7 +34,9 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
+use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\Shared\Converter;
+use PhpOffice\PhpWord\TemplateProcessor;
 
 class LaporanController extends BaseController
 {
@@ -133,13 +135,37 @@ class LaporanController extends BaseController
     public function generate($parameter)
     {
 
+
+
+
+        // Save file
+        // $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
+
+        // $time = Carbon::now()->format('YmdHis');
+        // $name = 'laporan' . $time . '.docx';
+        // $objWriter->save(public_path($name));
+
         $dateForMonth = Carbon::create(null, $parameter->bulan, 1);
+
 
         // Format the date to get the month name
         $monthName = $dateForMonth->format('F');
 
-        $phpWord = new \PhpOffice\PhpWord\PhpWord();
 
+        $phpWord = new TemplateProcessor('template.docx');
+        $phpWord->setValue('tahun', $parameter->tahun);
+        $phpWord->setValue('bulan', $parameter->bulan);
+
+        $phpWord = IOFactory::load(resource_path('template.docx'));
+
+        $section = $phpWord->addSection();
+
+        // $time = Carbon::now()->format('YmdHis');
+        // $name = 'result' . $time . '.docx';
+
+        // $templateProcessor->save(public_path($name));
+
+        // return $name;
 
 
         $phpWord->addParagraphStyle('pStyle', array('align' => 'center', 'spaceAfter' => 100));
