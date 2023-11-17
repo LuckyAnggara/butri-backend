@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employe;
+use App\Models\Jabatan;
 use App\Models\KenaikanGajiBerkala;
 use App\Models\KenaikanPangkat;
 use App\Models\MutasiPegawai;
+use App\Models\Pangkat;
 use App\Models\Pengembangan;
 use App\Models\Pensiun;
 use Carbon\Carbon;
@@ -18,10 +20,10 @@ class DashboardKepegawaianController extends BaseController
 
         $today = Carbon::now(); // Mengambil tanggal hari ini menggunakan Carbon
         $date = $request->input('date');
-        if($date){
+        if ($date) {
             $date = Carbon::createFromFormat('d M Y', $date);
             $dateQuery = $date->format('Y-m-d 23:59:59');
-        }else{
+        } else {
             $dateQuery = $today;
         }
         $pegawai = Employe::whereDate('created_at', '<=', $dateQuery)->get();
@@ -42,6 +44,21 @@ class DashboardKepegawaianController extends BaseController
             'pensiun' => $pensiun->count(),
         ];
 
-        return $this->sendResponse($data, 'Data fetched');
+        $pangkat = Pangkat::all();
+
+        $jabatan = Jabatan::all();
+
+        foreach ($pangkat as $key => $value) {
+            $count = Employe::where('pangkat_id', $value->id)->whereDate('created_at', '<=', $dateQuery)->get()->count();
+
+            $value->jumlah = $count;
+        }
+
+        foreach ($jabatan as $key => $value) {
+            $count = Employe::where('jabatan_id', $value->id)->whereDate('created_at', '<=', $dateQuery)->get()->count();
+            $value->jumlah = $count;
+        }
+
+        return $this->sendResponse(['data' => $data, 'pangkat' => $pangkat, 'jabatan' => $jabatan], 'Data fetched');
     }
 }

@@ -11,6 +11,7 @@ use App\Models\Employe;
 use App\Models\GroupUnit;
 use App\Models\IndikatorKinerjaKegiatan;
 use App\Models\IndikatorKinerjaUtama;
+use App\Models\Jabatan;
 use App\Models\JenisPengawasan;
 use App\Models\Kegiatan;
 use App\Models\KenaikanGajiBerkala;
@@ -21,6 +22,7 @@ use App\Models\MonitoringTemuanBpk;
 use App\Models\MonitoringTemuanBpkp;
 use App\Models\MonitoringTemuanOri;
 use App\Models\MutasiPegawai;
+use App\Models\Pangkat;
 use App\Models\PengelolaanMedia;
 use App\Models\Pengembangan;
 use App\Models\Pensiun;
@@ -184,14 +186,53 @@ class LaporanController extends BaseController
         $section->addTitle(htmlspecialchars('Total Pegawai'), 2);
         // $section->addText('Demografi Pegawai Inspektorat Jenderal', $header);
         // $section->addListItem(htmlspecialchars('Total Pegawai'), 0);
-        $section->addText('Inspektorat Jenderal sampai dengan bulan ' . $monthName . ' tahun ' . $parameter->tahun . ' memiliki pegawai dengan Jumlah ' . $dataKepegawaian['pegawai'] . ' pegawai', 'tStyle',  $justifyStyle);
+        $section->addText('Inspektorat Jenderal sampai dengan bulan ' . $monthName . ' tahun ' . $parameter->tahun . ' memiliki pegawai dengan Jumlah ' . $dataKepegawaian['umum']['pegawai'] . ' pegawai', 'tStyle',  $justifyStyle);
         $section->addTitle(htmlspecialchars('Berdasarkan Jenis Kelamin'), 2);
         // $section->addListItem(htmlspecialchars('Berdasarkan Jenis Kelamin'), 0);
         $section->addTextBreak();
-        $chart = $section->addChart('pie', $dataKepegawaian['categories1'], $dataKepegawaian['series1']);
+        $chart = $section->addChart('pie', $dataKepegawaian['umum']['categories1'], $dataKepegawaian['umum']['series1']);
         $chart->getStyle()->setWidth(Converter::inchToEmu(5))->setHeight(Converter::inchToEmu(4));
 
-        $section->addText('Berdasarkan jenis kelamin, bisa dilihat pada diagram diatas, jumlah Pegawai dengan jenis kelamin Laki-laki adalah sebanyak ' . $dataKepegawaian['series1'][0] . ' pegawai dan Pegawai dengan jenis kelamin perempuan sebanyak' . $dataKepegawaian['series1'][1]  . ' pegawai', 'tStyle', $justifyStyle);
+        $section->addText('Berdasarkan jenis kelamin, bisa dilihat pada diagram diatas, jumlah Pegawai dengan jenis kelamin Laki-laki adalah sebanyak ' . $dataKepegawaian['umum']['series1'][0] . ' pegawai dan Pegawai dengan jenis kelamin perempuan sebanyak' . $dataKepegawaian['umum']['series1'][1]  . ' pegawai', 'tStyle', $justifyStyle);
+
+        $section->addTextBreak();
+        $section->addTitle(htmlspecialchars('Berdasarkan Kepangkatan'), 2);
+        $phpWord->addTableStyle('Data Kepangkatan', $styleTable, $styleFirstRow);
+        $table = $section->addTable('Data Kepangkatan');
+        $table->addRow();
+        $table->addCell(500, $styleCell)->addText('#', $headerTableStyle);
+        $table->addCell(3000, $styleCell)->addText('Pangkat', $headerTableStyle);
+        $table->addCell(2000, $styleCell)->addText('Jumlah Pegawai', $headerTableStyle);
+        $number = 0;
+        foreach ($dataKepegawaian['pangkat'] as $key => $pangkat) {
+            if ($pangkat->jumlah == 0) {
+                continue;
+            }
+            $table->addRow();
+            $table->addCell(500)->addText(++$number);
+            $table->addCell(3000)->addText($pangkat->pangkat . ' - ' . $pangkat->ruang);
+            $table->addCell(2000)->addText($pangkat->jumlah);
+        }
+
+        $section->addTextBreak();
+        $section->addTitle(htmlspecialchars('Berdasarkan Jabatan'), 2);
+        $phpWord->addTableStyle('Data Jabatan', $styleTable, $styleFirstRow);
+        $table = $section->addTable('Data Jabatan');
+        $table->addRow();
+        $table->addCell(500, $styleCell)->addText('#', $headerTableStyle);
+        $table->addCell(3000, $styleCell)->addText('Jabatan', $headerTableStyle);
+        $table->addCell(2000, $styleCell)->addText('Jumlah Pegawai', $headerTableStyle);
+        $number = 0;
+        foreach ($dataKepegawaian['jabatan'] as $key => $pangkat) {
+            if ($pangkat->jumlah == 0) {
+                continue;
+            }
+            $table->addRow();
+            $table->addCell(500)->addText(++$number);
+            $table->addCell(3000)->addText($pangkat->name);
+            $table->addCell(2000)->addText($pangkat->jumlah);
+        }
+
 
         // ANGGARAN
         // PERKEGIATAN
@@ -378,10 +419,10 @@ class LaporanController extends BaseController
         );
         $section = $phpWord->addSection($sectionStyle);
         $section->addTextBreak(1);
-        $section->addTitle(htmlspecialchars('Data Kegiatan Inspektorat Jenderal'), 1);
-        $section->addText('Data Kegiatan pada bulan ' . $monthName . ' tahun ' . $parameter->tahun . ' adalah sebagai berikut:', 'tStyle',  $justifyStyle);
-        $phpWord->addTableStyle('Data Kegiatan', $styleTable, $styleFirstRow);
-        $table = $section->addTable('Data Kegiatan');
+        $section->addTitle(htmlspecialchars('Data Persuratan Inspektorat Jenderal'), 1);
+        $section->addText('Data Persuratan pada bulan ' . $monthName . ' tahun ' . $parameter->tahun . ' adalah sebagai berikut:', 'tStyle',  $justifyStyle);
+        $phpWord->addTableStyle('Data Persuratan', $styleTable, $styleFirstRow);
+        $table = $section->addTable('Data Persuratan');
         $table->addRow();
         $table->addCell(500, $styleCell)->addText('Bulan', $headerTableStyle);
         $table->addCell(3000, $styleCell)->addText('Surat Masuk', $headerTableStyle);
@@ -411,7 +452,7 @@ class LaporanController extends BaseController
             'marginTop' => 600,
         );
         $section = $phpWord->addSection($sectionStyle);
-        $section->addTitle(htmlspecialchars('Data Monitoring Temuan Internal'), 1);
+        $section->addTitle(htmlspecialchars('Data Monitoring Temuan APIP Inspektorat Jenderal'), 1);
         $section->addText('Data Monitoring Temuan Internal sampai dengan bulan ' . $monthName . ' tahun ' . $parameter->tahun . ' adalah sebagai berikut:', 'tStyle',  $justifyStyle);
 
         $styleTable = array('borderSize' => 6, 'borderColor' => '999999');
@@ -481,11 +522,11 @@ class LaporanController extends BaseController
         );
         $section = $phpWord->addSection($sectionStyle);
         $section->addTextBreak(1);
-        $section->addTitle(htmlspecialchars('Data Monitoring Temuan Internal'), 1);
-        $section->addText('Data Monitoring Temuan Internal sampai dengan bulan ' . $monthName . ' tahun ' . $parameter->tahun . ' adalah sebagai berikut:', 'tStyle',  $justifyStyle);
+        $section->addTitle(htmlspecialchars('Data Monitoring Temuan External'), 1);
+        $section->addText('Data Monitoring Temuan External sampai dengan bulan ' . $monthName . ' tahun ' . $parameter->tahun . ' adalah sebagai berikut:', 'tStyle',  $justifyStyle);
 
         // BPK
-        $section->addTitle(htmlspecialchars('Temuan Badan Pemeriksa Keuangan'), 2);
+        $section->addTitle(htmlspecialchars('Temuan Badan Pemeriksa Keuangan (BPK)'), 2);
         $phpWord->addTableStyle('Data Montoring Eksternal', $styleTable, $styleFirstRow);
         $table = $section->addTable('Data Montoring Eksternal');
 
@@ -501,7 +542,7 @@ class LaporanController extends BaseController
             $table->addCell(3000)->addText(number_format(round($bpk->nominal, 2)));
         }
         // BPKP
-        $section->addTitle(htmlspecialchars('Temuan Badan Pengawasan Keuangan dan Pembangunan'), 2);
+        $section->addTitle(htmlspecialchars('Temuan Badan Pengawasan Keuangan dan Pembangunan (BPKP)'), 2);
         $phpWord->addTableStyle('Data Montoring Eksternal', $styleTable, $styleFirstRow);
         $table = $section->addTable('Data Montoring Eksternal');
 
@@ -519,7 +560,7 @@ class LaporanController extends BaseController
         }
 
         // ORI
-        $section->addTitle(htmlspecialchars('Temuan Ombudsman Republik Indonesia'), 2);
+        $section->addTitle(htmlspecialchars('Temuan Ombudsman Republik Indonesia (ORI)'), 2);
         $phpWord->addTableStyle('Data Montoring Eksternal', $styleTable, $styleFirstRow);
         $table = $section->addTable('Data Montoring Eksternal');
 
@@ -704,6 +745,8 @@ class LaporanController extends BaseController
         return $data;
     }
 
+
+
     public function laporanIKU($parameter)
     {
         $tahun = $parameter->tahun;
@@ -840,8 +883,22 @@ class LaporanController extends BaseController
         $kepangkatan = KenaikanPangkat::whereMonth('created_at',  $dateQuery)->get();
         $pensiun = Pensiun::whereMonth('created_at',  $dateQuery)->get();
 
+        $pangkat = Pangkat::all();
 
-        $data = [
+        $jabatan = Jabatan::all();
+
+        foreach ($pangkat as $key => $value) {
+            $count = Employe::where('pangkat_id', $value->id)->whereDate('created_at', '<=', $dateQuery)->get()->count();
+
+            $value->jumlah = $count;
+        }
+
+        foreach ($jabatan as $key => $value) {
+            $count = Employe::where('jabatan_id', $value->id)->whereDate('created_at', '<=', $dateQuery)->get()->count();
+            $value->jumlah = $count;
+        }
+
+        $umum = [
             'categories1' => array('Laki - Laki', 'Perempuan'),
             'series1' => array($pegawai->where('gender', 'LAKI LAKI')->count(), $pegawai->where('gender', 'PEREMPUAN')->count()),
             'pegawai' => $pegawai->count(),
@@ -850,6 +907,11 @@ class LaporanController extends BaseController
             'kgb' => $kgb->count(),
             'kepangkatan' => $kepangkatan->count(),
             'pensiun' => $pensiun->count(),
+        ];
+
+        $data = [
+            'umum' => $umum,
+            'pangkat' => $pangkat, 'jabatan' => $jabatan
         ];
 
         return $data;

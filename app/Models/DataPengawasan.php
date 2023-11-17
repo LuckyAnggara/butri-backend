@@ -40,6 +40,11 @@ class DataPengawasan extends Model
         return $this->hasOne(JenisPengawasan::class, 'id', 'jenis_pengawasan_id');
     }
 
+    public function unit()
+    {
+        return $this->hasOne(Unit::class, 'id', 'unit_id');
+    }
+
     public function getTanggalKegiatanAttribute()
     {
         return [

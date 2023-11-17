@@ -21,7 +21,7 @@ class CapaianIndikatorKinerjaKegiatanController extends BaseController
         $bulan = $request->input('bulan');
 
 
-        $data = IndikatorKinerjaKegiatan::when($tahun, function ($query, $tahun) {
+        $data = IndikatorKinerjaKegiatan::with('group')->when($tahun, function ($query, $tahun) {
             return $query->whereYear('created_at', $tahun);
         })
             ->when($unit, function ($query, $unit) {
@@ -75,7 +75,7 @@ class CapaianIndikatorKinerjaKegiatanController extends BaseController
 
     public function show($id)
     {
-        $result = IndikatorKinerjaKegiatan::where('id', $id)->first();
+        $result = IndikatorKinerjaKegiatan::with('group')->where('id', $id)->first();
 
         $detail = CapaianIndikatorKinerjaKegiatan::where('ikk_id', $id)->get();
         $result->capaian = $detail;

@@ -17,7 +17,7 @@ class DataPengawasanController extends BaseController
         $bulan = $request->input('bulan');
 
 
-        $data = DataPengawasan::with('jenis')->when($tahun, function ($query, $tahun) {
+        $data = DataPengawasan::with('jenis', 'unit')->when($tahun, function ($query, $tahun) {
             return $query->where('tahun', $tahun);
         })
             ->when($bulan, function ($query, $bulan) {
