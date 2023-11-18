@@ -15,6 +15,7 @@ class CapaianIndikatorKinerjaKegiatan extends Model
         'tahun',
         'bulan',
         'realisasi',
+        'capaian',
         'analisa',
         'kegiatan',
         'kendala',

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('tahun');
             $table->string('bulan');
             $table->string('realisasi');
+            $table->string('capaian')->nullable();
             $table->text('analisa')->nullable();
             $table->text('kegiatan')->nullable();
             $table->text('kendala')->nullable();

@@ -24,6 +24,7 @@ use App\Http\Controllers\KenaikanGajiBerkalaController;
 use App\Http\Controllers\KenaikanPangkatController;
 use App\Http\Controllers\KinerjaKeuanganController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\LaporanCopyController;
 use App\Http\Controllers\LaporanWilayahController;
 use App\Http\Controllers\MonitoringPengaduanController;
 use App\Http\Controllers\MonitoringPengawasanItwilController;
@@ -79,7 +80,7 @@ Route::resource('indikator-kinerja-utama', IndikatorKinerjaUtamaController::clas
 Route::resource('indikator-kinerja-kegiatan', IndikatorKinerjaKegiatanController::class);
 Route::resource('program-unggulan', ProgramUnggulanController::class);
 
-Route::resource('laporan', LaporanController::class);
+Route::resource('laporan', LaporanCopyController::class);
 Route::resource('laporan-wilayah', LaporanWilayahController::class);
 Route::get(
     'laporan-wilayah-download/{id}',
@@ -88,15 +89,15 @@ Route::get(
 
 Route::get(
     'laporan-generate',
-    [LaporanController::class, 'generate']
+    [LaporanCopyController::class, 'generate']
 );
 Route::get(
     'laporan-view',
-    [LaporanWilayahController::class, 'view']
+    [LaporanCopyController::class, 'laporanIKK']
 );
 Route::get(
     'laporan-download/{id}',
-    [LaporanController::class, 'download']
+    [LaporanCopyController::class, 'download']
 );
 
 

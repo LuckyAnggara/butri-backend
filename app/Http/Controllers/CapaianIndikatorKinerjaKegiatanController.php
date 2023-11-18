@@ -58,6 +58,7 @@ class CapaianIndikatorKinerjaKegiatanController extends BaseController
                 'tahun' => $data->tahun,
                 'bulan' => $data->bulan,
                 'realisasi' => $data->realisasi,
+                'capaian' => $data->capaian,
                 'analisa' => nl2br(trim($data->analisa)),
                 'kegiatan' => nl2br(trim($data->kegiatan)),
                 'kendala' => nl2br(trim($data->kendala)),

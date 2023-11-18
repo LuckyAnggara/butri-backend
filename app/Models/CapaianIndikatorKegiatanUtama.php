@@ -16,6 +16,7 @@ class CapaianIndikatorKegiatanUtama extends Model
         'tahun',
         'realisasi',
         'analisa',
+        'capaian',
         'kegiatan',
         'kendala',
         'hambatan',

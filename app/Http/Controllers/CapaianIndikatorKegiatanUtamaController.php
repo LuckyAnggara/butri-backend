@@ -49,6 +49,7 @@ class CapaianIndikatorKegiatanUtamaController extends BaseController
             $result = CapaianIndikatorKegiatanUtama::create([
                 'iku_id' => $data->iku->id,
                 'realisasi' => $data->realisasi,
+                'capaian' => $data->capaian,
                 'analisa' => nl2br(trim($data->analisa)),
                 'kegiatan' => nl2br(trim($data->kegiatan)),
                 'kendala' => nl2br(trim($data->kendala)),

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Bpk;
+use App\Classes\ExtendedTemplateProcessor;
 use App\Models\CapaianIndikatorKegiatanUtama;
 use App\Models\CapaianIndikatorKinerjaKegiatan;
 use App\Models\DataPengawasan;
@@ -34,11 +35,14 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
+use PhpOffice\PhpWord\Element\Table;
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\Shared\Converter;
+use PhpOffice\PhpWord\Shared\XMLWriter;
 use PhpOffice\PhpWord\TemplateProcessor;
+use PhpOffice\PhpWord\Writer\Word2007\Element\Container;
 
-class LaporanController extends BaseController
+class LaporanCopyController extends BaseController
 {
     public function index(Request $request)
     {
@@ -134,30 +138,52 @@ class LaporanController extends BaseController
 
     public function generate($parameter){
 
-
         $dateForMonth = Carbon::create(null, $parameter->bulan, 1);
         // Format the date to get the month name
         $monthName = $dateForMonth->format('F');
-        $templateProcessor  = new TemplateProcessor(public_path('template.docx'));
+        $templateProcessor = new TemplateProcessor(public_path('template.docx'));
         $templateProcessor->setValue('tahun', $parameter->tahun);
         $templateProcessor->setValue('bulan', $monthName);
 
-        $content = $this->generate2($parameter);
+        $kepegawaian = $this->laporanKepegawaian($parameter);
+        $templateProcessor->setValue('total_pegawai', $kepegawaian['total_pegawai']);
+        // $templateProcessor->setValue('total_pegawai_laki', $$kepegawaian['total_pegawai_laki']);
+        $templateProcessor->setValue('total_pegawai_perempuan', $kepegawaian['total_pegawai_perempuan']);
+        $templateProcessor->setComplexBlock('tabel_total_pegawai', $kepegawaian['tabel_total_pegawai']);
+        $templateProcessor->setComplexBlock('tabel_kepangkatan', $kepegawaian['tabel_kepangkatan']);
+        $templateProcessor->setComplexBlock('tabel_jabatan', $kepegawaian['tabel_jabatan']);
 
-        $templateProcessor->setValue('isi', $content);
+        $anggaran = $this->laporanAnggaran($parameter);
+        $templateProcessor->setValue('total_realisasi', $anggaran['total_realisasi']);
+        $templateProcessor->setValue('total_pagu', $anggaran['total_pagu']);
+        $templateProcessor->setValue('total_persen_realisasi_anggaran', $anggaran['total_persen_realisasi_anggaran']);
+        $templateProcessor->setComplexBlock('tabel_per_kegiatan', $anggaran['tabel_per_kegiatan']);
+        $templateProcessor->setComplexBlock('tabel_per_belanja', $anggaran['tabel_per_belanja']);
+
+        
+        $iku = $this->laporanIKU($parameter);
+        $templateProcessor->setComplexBlock('tabel_capaian_iku', $iku);
+
+        $ikk = $this->laporanIKK($parameter);
+        $templateProcessor->setComplexBlock('tabel_capaian_ikk_1', $ikk['tabel_capaian_ikk_1']);
+        $templateProcessor->setComplexBlock('tabel_capaian_ikk_2', $ikk['tabel_capaian_ikk_2']);
+        $templateProcessor->setComplexBlock('tabel_capaian_ikk_3', $ikk['tabel_capaian_ikk_3']);
+        $templateProcessor->setComplexBlock('tabel_capaian_ikk_4', $ikk['tabel_capaian_ikk_4']);
+        $templateProcessor->setComplexBlock('tabel_capaian_ikk_5', $ikk['tabel_capaian_ikk_5']);
+        $templateProcessor->setComplexBlock('tabel_capaian_ikk_6', $ikk['tabel_capaian_ikk_6']);
+        $templateProcessor->setComplexBlock('tabel_capaian_ikk_7', $ikk['tabel_capaian_ikk_7']);
+
         $time = Carbon::now()->format('YmdHis');
-        $name = 'result' . $time . '.docx';
-
-
-
-
+        $name = 'resultdd' . $time . '.docx';
         $templateProcessor->saveAs(public_path($name));
+
         return $name;
 
 
     }
 
-    public function generate2($parameter)
+
+    public function generate3($parameter)
     {
 
         $dateForMonth = Carbon::create(null, $parameter->bulan, 1);
@@ -196,25 +222,39 @@ class LaporanController extends BaseController
         $phpWord->addTitleStyle(1, $header, array('numStyle' => 'headingNumbering', 'numLevel' => 0));
         $phpWord->addTitleStyle(2, array('size' => 11), array('numStyle' => 'headingNumbering', 'numLevel' => 1));
 
-
-
         // Data Kepegawaian 2D charts
 
         $dataKepegawaian = $this->laporanKepegawaian($parameter);
         $section = $phpWord->addSection();
-        // Numbered heading
 
-
-        $section->addTitle(htmlspecialchars('Demografi Pegawai Inspektorat Jenderal'), 1);
-        $section->addTitle(htmlspecialchars('Total Pegawai'), 2);
-        // $section->addText('Demografi Pegawai Inspektorat Jenderal', $header);
-        // $section->addListItem(htmlspecialchars('Total Pegawai'), 0);
-        $section->addText('Inspektorat Jenderal sampai dengan bulan ' . $monthName . ' tahun ' . $parameter->tahun . ' memiliki pegawai dengan Jumlah ' . $dataKepegawaian['umum']['pegawai'] . ' pegawai', 'tStyle',  $justifyStyle);
-        $section->addTitle(htmlspecialchars('Berdasarkan Jenis Kelamin'), 2);
-        // $section->addListItem(htmlspecialchars('Berdasarkan Jenis Kelamin'), 0);
         $section->addTextBreak();
-        $chart = $section->addChart('pie', $dataKepegawaian['umum']['categories1'], $dataKepegawaian['umum']['series1']);
-        $chart->getStyle()->setWidth(Converter::inchToEmu(5))->setHeight(Converter::inchToEmu(4));
+
+        $table = $section->addTable('Data Kepangkatan');
+        $table->addRow();
+        $table->addCell(500, $styleCell)->addText('#', $headerTableStyle);
+        $table->addCell(3000, $styleCell)->addText('Jenis', $headerTableStyle);
+        $table->addCell(2000, $styleCell)->addText('Jumlah Pegawai', $headerTableStyle);
+        $table->addRow();
+        $table->addCell(500, $styleCell)->addText('1');
+        $table->addCell(3000, $styleCell)->addText('Laki - Laki');
+        $table->addCell(2000, $styleCell)->addText($dataKepegawaian['laki']);
+               $table->addRow();
+        $table->addCell(500, $styleCell)->addText('2');
+        $table->addCell(3000, $styleCell)->addText('Perempuan');
+        $table->addCell(2000, $styleCell)->addText($dataKepegawaian['perempuan']);
+    
+        // Create writer to convert document to xml
+        $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($table, 'Word2007');
+
+        // Get all document xml code
+        $fullxml = $objWriter->getWriterPart('Document')->write();
+
+        // Get only table xml code
+        $table_total_pegawai = preg_replace('/^[\s\S]*(<w:tbl\b.*<\/w:tbl>).*/', '$1', $fullxml);
+
+        $data = ['table_total_pegawai'=> $table_total_pegawai];
+        return $data;
+        
 
         $section->addText('Berdasarkan jenis kelamin, bisa dilihat pada diagram diatas, jumlah Pegawai dengan jenis kelamin Laki-laki adalah sebanyak ' . $dataKepegawaian['umum']['series1'][0] . ' pegawai dan Pegawai dengan jenis kelamin perempuan sebanyak' . $dataKepegawaian['umum']['series1'][1]  . ' pegawai', 'tStyle', $justifyStyle);
 
@@ -628,6 +668,10 @@ class LaporanController extends BaseController
 
 
         // Save file
+
+
+
+
         $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
 
         $time = Carbon::now()->format('YmdHis');
@@ -785,7 +829,29 @@ class LaporanController extends BaseController
                 return $query->whereYear('created_at', $tahun);
             })->first();
         }
-        return $data;
+
+        // TABEL CAPAIAN IKU
+        $styleTable = array('borderSize' => 6, 'borderColor' => '006699', 'cellMargin' => 80);
+        $styleCell = array('valign' => 'center', 'size' => 11);
+        $headerTableStyle = array('bold' => true, 'align' => 'center');
+        // ADD TABLE
+        $tabel_capaian_iku = new Table($styleTable);
+        $tabel_capaian_iku->addRow();
+        $tabel_capaian_iku->addCell(4000, $styleCell)->addText('Indikator', $headerTableStyle);
+        $tabel_capaian_iku->addCell(2000, $styleCell)->addText('Target', $headerTableStyle);
+        $tabel_capaian_iku->addCell(4000, $styleCell)->addText('Realisasi', $headerTableStyle);
+        $tabel_capaian_iku->addCell(4000, $styleCell)->addText('Analisis', $headerTableStyle);
+        $tabel_capaian_iku->addCell(4000, $styleCell)->addText('Kendala / Hambatan', $headerTableStyle);
+        foreach ($data as $key => $iku) {
+            $tabel_capaian_iku->addRow();
+            $tabel_capaian_iku->addCell(4000)->addText($iku->name);
+            $tabel_capaian_iku->addCell(2000)->addText($iku->target);
+            $tabel_capaian_iku->addCell(3000)->addText(str_replace('<br />', '</w:t><w:br/><w:t>', $iku->realisasi->realisasi ?? ''));
+            $tabel_capaian_iku->addCell(3000)->addText(str_replace('<br />', '</w:t><w:br/><w:t>', $iku->realisasi->analisa ?? ''));
+            $tabel_capaian_iku->addCell(3000)->addText(str_replace('<br />', '</w:t><w:br/><w:t>', $iku->realisasi->kendala ?? ''));
+        }
+
+        return $tabel_capaian_iku;
     }
 
 
@@ -805,7 +871,33 @@ class LaporanController extends BaseController
             }
             $x->ikk = $result;
         }
-        return $groupAll;
+
+        // TABEL CAPAIAN IKK
+        $styleTable = array('borderSize' => 6, 'borderColor' => '006699', 'cellMargin' => 80);
+        $styleCell = array('valign' => 'center', 'size' => 11);
+        $headerTableStyle = array('bold' => true, 'align' => 'center');
+        // ADD TABLE
+        $number = 0;
+         foreach ($groupAll as $key => $value) {
+            ++$number;
+            $table = new Table($styleTable);
+            $table->addRow();
+            $table->addCell(4000, $styleCell)->addText('Indikator', $headerTableStyle);
+            $table->addCell(2000, $styleCell)->addText('Target', $headerTableStyle);
+            $table->addCell(4000, $styleCell)->addText('Realisasi', $headerTableStyle);
+            $table->addCell(4000, $styleCell)->addText('Analisis', $headerTableStyle);
+            $table->addCell(4000, $styleCell)->addText('Kendala / Hambatan', $headerTableStyle);
+            foreach ($value->ikk as $key => $ikk) {
+                $table->addRow();
+                $table->addCell(4000)->addText($ikk->name);
+                $table->addCell(2000)->addText($ikk->target);
+                $table->addCell(3000)->addText(str_replace('<br />', '</w:t><w:br/><w:t>', $ikk->realisasi->realisasi ?? ''));
+                $table->addCell(3000)->addText(str_replace('<br />', '</w:t><w:br/><w:t>', $ikk->realisasi->analisa ?? ''));
+                $table->addCell(3000)->addText(str_replace('<br />', '</w:t><w:br/><w:t>', $ikk->realisasi->kendala ?? ''));
+            }
+            $data['tabel_capaian_ikk_'.$number] = $table; 
+        }
+        return $data;
     }
 
     public function laporanDataPengawasan($parameter)
@@ -831,8 +923,6 @@ class LaporanController extends BaseController
     {
         $tahun = $parameter->tahun;
         $bulan = $parameter->bulan;
-
-
         // ANGGARAN
         $realisasiKegiatan = Dipa::with(['group', 'realisasi' => function ($query) use ($bulan) {
             $query->where('bulan', '<=', $bulan);
@@ -882,19 +972,83 @@ class LaporanController extends BaseController
             $value->total_realisasi = $total_realisasi -   $value->realisasi_saat_ini;
         }
 
-
-        return $realisasi = [
+        $realisasi = [
             'totalRealisasi' => $totalRealisasi,
             'totalPagu' => $totalPagu,
             'realisasiKegiatan' => $realisasiKegiatan,
             'realisasiBelanja' => $realisasiBelanja,
         ];
+
+        // TABEL ANGGARAN
+        // PERKEGIATAN
+        $styleTable = array('borderSize' => 6, 'borderColor' => '006699', 'cellMargin' => 80);
+        $styleCell = array('valign' => 'center', 'size' => 11);
+        $headerTableStyle = array('bold' => true, 'align' => 'center');
+        // ADD TABLE
+        $tabel_per_kegiatan = new Table($styleTable);
+        $tabel_per_kegiatan->addRow();
+        $tabel_per_kegiatan->addCell(500, $styleCell)->addText('#', $headerTableStyle);
+        $tabel_per_kegiatan->addCell(1000, $styleCell)->addText('Kode', $headerTableStyle);
+        $tabel_per_kegiatan->addCell(4000, $styleCell)->addText('Kegiatan', $headerTableStyle);
+        $tabel_per_kegiatan->addCell(2000, $styleCell)->addText('Pagu (Rp.)', $headerTableStyle);
+        $tabel_per_kegiatan->addCell(2000, $styleCell)->addText('Realisasi (Rp.)', $headerTableStyle);
+        $tabel_per_kegiatan->addCell(500, $styleCell)->addText('%', $headerTableStyle);
+        $number = 0;
+        foreach ($realisasi['realisasiKegiatan'] as $key => $kegiatan) {
+            $tabel_per_kegiatan->addRow();
+            $tabel_per_kegiatan->addCell(500)->addText(++$number);
+            $tabel_per_kegiatan->addCell(1000)->addText($kegiatan->kode);
+            $tabel_per_kegiatan->addCell(4000)->addText($kegiatan->name);
+            $tabel_per_kegiatan->addCell(2000)->addText(number_format(round($kegiatan->pagu, 2)));
+            $tabel_per_kegiatan->addCell(2000)->addText(number_format(round($kegiatan->realisasi_saat_ini, 2)));
+            $tabel_per_kegiatan->addCell(500)->addText(round(($kegiatan->realisasi_saat_ini / $kegiatan->pagu) * 100, 2) . '%');
+        }
+
+        // PERBELANJA
+        $styleTable = array('borderSize' => 6, 'borderColor' => '006699', 'cellMargin' => 80);
+        $styleCell = array('valign' => 'center', 'size' => 11);
+        $headerTableStyle = array('bold' => true, 'align' => 'center');
+        // ADD TABLE
+        $tabel_per_belanja = new Table($styleTable);
+        $tabel_per_belanja->addRow();
+        $tabel_per_belanja->addCell(500, $styleCell)->addText('#', $headerTableStyle);
+        $tabel_per_belanja->addCell(4000, $styleCell)->addText('Kegiatan', $headerTableStyle);
+        $tabel_per_belanja->addCell(2000, $styleCell)->addText('Pagu (Rp.)', $headerTableStyle);
+        $tabel_per_belanja->addCell(2000, $styleCell)->addText('Realisasi (Rp.)', $headerTableStyle);
+        $tabel_per_belanja->addCell(500, $styleCell)->addText('%', $headerTableStyle);
+        $number = 0;
+        foreach ($realisasi['realisasiBelanja'] as $key => $belanja) {
+            $tabel_per_belanja->addRow();
+            $tabel_per_belanja->addCell(500)->addText(++$number);
+            $tabel_per_belanja->addCell(4000)->addText($belanja->name);
+            $tabel_per_belanja->addCell(2000)->addText(number_format(round($belanja->pagu, 2)));
+            $tabel_per_belanja->addCell(2000)->addText(number_format(round($belanja->realisasi_saat_ini, 2)));
+            $tabel_per_belanja->addCell(500)->addText(round(($belanja->realisasi_saat_ini / $belanja->pagu) * 100, 2) . '%');
+        }
+     
+            $realisasi = [
+            'totalRealisasi' => $totalRealisasi,
+            'totalPagu' => $totalPagu,
+            'realisasiKegiatan' => $realisasiKegiatan,
+            'realisasiBelanja' => $realisasiBelanja,
+        ];
+
+        return  [
+        'total_realisasi' => number_format(round($realisasi['totalRealisasi'], 2)),
+        'total_pagu' => number_format(round($realisasi['totalPagu'], 2)),
+        'total_persen_realisasi_anggaran' => number_format(round(($realisasi['totalRealisasi']/$realisasi['totalPagu']) * 100),2),
+        'tabel_per_kegiatan' => $tabel_per_kegiatan,
+        'tabel_per_belanja' => $tabel_per_belanja,
+        ];
+    
+  
     }
 
     public function laporanKepegawaian($parameter)
     {
         $tahun = $parameter->tahun;
         $bulan = $parameter->bulan;
+        
 
         $date = Carbon::createFromFormat('Y-m-d', $tahun . '-' . $bulan . '-' . '28');
         $dateQuery = $date->format('Y-m-d 23:59:59');
@@ -905,9 +1059,7 @@ class LaporanController extends BaseController
         $kgb = KenaikanGajiBerkala::whereMonth('created_at',  $dateQuery)->get();
         $kepangkatan = KenaikanPangkat::whereMonth('created_at',  $dateQuery)->get();
         $pensiun = Pensiun::whereMonth('created_at',  $dateQuery)->get();
-
         $pangkat = Pangkat::all();
-
         $jabatan = Jabatan::all();
 
         foreach ($pangkat as $key => $value) {
@@ -922,22 +1074,86 @@ class LaporanController extends BaseController
         }
 
         $umum = [
-            'categories1' => array('Laki - Laki', 'Perempuan'),
-            'series1' => array($pegawai->where('gender', 'LAKI LAKI')->count(), $pegawai->where('gender', 'PEREMPUAN')->count()),
-            'pegawai' => $pegawai->count(),
+            'total_pegawai' => $pegawai->count(),
+            'total_pegawai_laki'=> $pegawai->where('gender', 'LAKI LAKI')->count(),
+            'total_pegawai_perempuan'=> $pegawai->where('gender', 'PEREMPUAN')->count(),
             'mutasi' => $mutasi->count(),
             'pengembangan' => $pengembangan->count(),
             'kgb' => $kgb->count(),
             'kepangkatan' => $kepangkatan->count(),
             'pensiun' => $pensiun->count(),
+            'pangkat' => $pangkat, 
+            'jabatan' => $jabatan,
         ];
+
+   
+
+        $styleTable = array('borderSize' => 6, 'borderColor' => '006699', 'cellMargin' => 80);
+        $styleCell = array('valign' => 'center', 'size' => 11);
+        $headerTableStyle = array('bold' => true, 'align' => 'center');
+        // ADD TABLE
+        $tabel_total_pegawai = new Table($styleTable);
+        // Tabel pegawai berdasarkan jenis
+        $tabel_total_pegawai->addRow();
+        $tabel_total_pegawai->addCell(500, $styleCell)->addText('#', $headerTableStyle);
+        $tabel_total_pegawai->addCell(3000, $styleCell)->addText('Jenis', $headerTableStyle);
+        $tabel_total_pegawai->addCell(2000, $styleCell)->addText('Jumlah Pegawai', $headerTableStyle);
+        $tabel_total_pegawai->addRow();
+        $tabel_total_pegawai->addCell(500, $styleCell)->addText('1');
+        $tabel_total_pegawai->addCell(3000, $styleCell)->addText('Laki - Laki');
+        $tabel_total_pegawai->addCell(2000, $styleCell)->addText($umum['total_pegawai_laki']);
+        $tabel_total_pegawai->addRow();
+        $tabel_total_pegawai->addCell(500, $styleCell)->addText('2');
+        $tabel_total_pegawai->addCell(3000, $styleCell)->addText('Perempuan');
+        $tabel_total_pegawai->addCell(2000, $styleCell)->addText($umum['total_pegawai_perempuan']);
+    
+        $data = [];
+
+        // ADD TABLE
+        $tabel_kepangkatan = new Table($styleTable);
+        // Tabel pegawai berdasarkan jenis Pangkat
+        $tabel_kepangkatan->addRow();
+        $tabel_kepangkatan->addCell(500, $styleCell)->addText('#', $headerTableStyle);
+        $tabel_kepangkatan->addCell(3000, $styleCell)->addText('Pangkat', $headerTableStyle);
+        $tabel_kepangkatan->addCell(2000, $styleCell)->addText('Jumlah Pegawai', $headerTableStyle);
+        $number = 0;
+        foreach ($umum['pangkat'] as $key => $pangkat) {
+            if ($pangkat->jumlah == 0) {
+                continue;
+            }
+            $tabel_kepangkatan->addRow();
+            $tabel_kepangkatan->addCell(500)->addText(++$number);
+            $tabel_kepangkatan->addCell(3000)->addText($pangkat->pangkat . ' - ' . $pangkat->ruang);
+            $tabel_kepangkatan->addCell(2000)->addText($pangkat->jumlah);
+        }
+        $tabel_jabatan = new Table($styleTable);
+        // Tabel pegawai berdasarkan jenis Jabatan
+        $tabel_jabatan->addRow();
+        $tabel_jabatan->addCell(500, $styleCell)->addText('#', $headerTableStyle);
+        $tabel_jabatan->addCell(3000, $styleCell)->addText('Jabatan', $headerTableStyle);
+        $tabel_jabatan->addCell(2000, $styleCell)->addText('Jumlah Pegawai', $headerTableStyle);
+        $number = 0;
+        foreach ($umum['jabatan'] as $key => $jabatan) {
+            if ($jabatan->jumlah == 0) {
+                continue;
+            }
+            $tabel_jabatan->addRow();
+            $tabel_jabatan->addCell(500)->addText(++$number);
+            $tabel_jabatan->addCell(3000)->addText($jabatan->name);
+            $tabel_jabatan->addCell(2000)->addText($jabatan->jumlah);
+        }
 
         $data = [
-            'umum' => $umum,
-            'pangkat' => $pangkat, 'jabatan' => $jabatan
-        ];
-
+        'total_pegawai_perempuan' => $umum['total_pegawai_perempuan'],
+        'total_pegawai_laki' => $umum['total_pegawai_laki'],
+        'total_pegawai' => $umum['total_pegawai'],
+        'tabel_jabatan'=> $tabel_jabatan,
+        'tabel_kepangkatan'=> $tabel_kepangkatan,
+        'tabel_total_pegawai'=> $tabel_total_pegawai
+    ];
         return $data;
+
+      
     }
 
     public function view()
