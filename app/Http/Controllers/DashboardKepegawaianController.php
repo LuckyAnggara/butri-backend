@@ -20,12 +20,14 @@ class DashboardKepegawaianController extends BaseController
 
         $today = Carbon::now(); // Mengambil tanggal hari ini menggunakan Carbon
         $date = $request->input('date');
+        
         if ($date) {
             $date = Carbon::createFromFormat('d M Y', $date);
             $dateQuery = $date->format('Y-m-d 23:59:59');
         } else {
             $dateQuery = $today;
         }
+
         $pegawai = Employe::whereDate('created_at', '<=', $dateQuery)->get();
         $mutasi = MutasiPegawai::whereMonth('created_at',  $dateQuery)->get();
         $pengembangan = Pengembangan::whereMonth('created_at',  $dateQuery)->get();

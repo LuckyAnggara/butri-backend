@@ -14,6 +14,7 @@ class EmployeController extends BaseController
     {
         $perPage = $request->input('limit', 5);
         $name = $request->input('name');
+        $unit = $request->input('unit');
 
         $data = Employe::with('pangkat', 'jabatan', 'unit')
             ->where(function ($query) {
@@ -23,6 +24,9 @@ class EmployeController extends BaseController
             ->when($name, function ($query, $name) {
                 return $query->where('name', 'like', '%' . $name . '%')
                     ->orWhere('nip', 'like', '%' . $name . '%');
+            })
+            ->when($unit, function ($query, $unit) {
+                return $query->where('unit_id',$unit);
             })
             ->orderBy('nip', 'asc')
             ->latest()
