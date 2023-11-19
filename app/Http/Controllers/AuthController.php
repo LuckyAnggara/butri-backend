@@ -71,7 +71,7 @@ class AuthController extends BaseController
 
     public function index(Request $request)
     {
-        $perPage = $request->input('limit', 10);
+        $perPage = $request->input('limit', 100);
         $data = User::with('role', 'unit')->latest()->paginate($perPage);
 
         return $this->sendResponse($data, 'Data fetched');

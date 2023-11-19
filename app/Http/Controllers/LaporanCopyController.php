@@ -357,10 +357,6 @@ class LaporanCopyController extends BaseController
         // ADD TABLE
         $table = new Table($styleTable);
         $table->addRow();
-        $table->addCell(4000, $styleCell)->addText('Keterangan', $headerTableStyle);
-        $table->addCell(2000, $styleCell)->addText('Jumlah', $headerTableStyle);
-        $table->addCell(3000, $styleCell)->addText('Nominal', $headerTableStyle);
-        $table->addRow();
         $table->addCell(500, $styleCell)->addText('Bulan', $headerTableStyle);
         $table->addCell(3000, $styleCell)->addText('Surat Masuk', $headerTableStyle);
         $table->addCell(3000, $styleCell)->addText('Surat Keluar', $headerTableStyle);
@@ -449,7 +445,7 @@ class LaporanCopyController extends BaseController
         $tabel_bpk->addRow();
         $tabel_bpk->addCell(4000, $styleCell)->addText('Keterangan', $headerTableStyle);
         $tabel_bpk->addCell(2000, $styleCell)->addText('Jumlah', $headerTableStyle);
-        $tabel_bpk->addCell(3000, $styleCell)->addText('Nominal', $headerTableStyle);
+        $tabel_bpk->addCell(3000, $styleCell)->addText('Nominal (Rp.)', $headerTableStyle);
 
         foreach ($bpk as $key => $bpk) {
             $tabel_bpk->addRow();
@@ -463,7 +459,7 @@ class LaporanCopyController extends BaseController
         $tabel_bpkp->addRow();
         $tabel_bpkp->addCell(4000, $styleCell)->addText('Keterangan', $headerTableStyle);
         $tabel_bpkp->addCell(2000, $styleCell)->addText('Jumlah', $headerTableStyle);
-        $tabel_bpkp->addCell(3000, $styleCell)->addText('Nominal', $headerTableStyle);
+        $tabel_bpkp->addCell(3000, $styleCell)->addText('Nominal (Rp.)', $headerTableStyle);
 
         foreach ($bpkp as $key => $bpkp) {
             $tabel_bpkp->addRow();
@@ -477,7 +473,7 @@ class LaporanCopyController extends BaseController
         $tabel_ori->addRow();
         $tabel_ori->addCell(4000, $styleCell)->addText('Keterangan', $headerTableStyle);
         $tabel_ori->addCell(2000, $styleCell)->addText('Jumlah', $headerTableStyle);
-        $tabel_ori->addCell(3000, $styleCell)->addText('Nominal', $headerTableStyle);
+        $tabel_ori->addCell(3000, $styleCell)->addText('Nominal (Rp.)', $headerTableStyle);
 
         foreach ($ori as $key => $ori) {
             $tabel_ori->addRow();
