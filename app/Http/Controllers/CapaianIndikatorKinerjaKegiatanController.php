@@ -76,11 +76,22 @@ class CapaianIndikatorKinerjaKegiatanController extends BaseController
 
     public function show($id)
     {
+
         $result = IndikatorKinerjaKegiatan::with('group')->where('id', $id)->first();
 
         $detail = CapaianIndikatorKinerjaKegiatan::where('ikk_id', $id)->get();
         $result->capaian = $detail;
         if ($detail) {
+            return $this->sendResponse($result, 'Data fetched');
+        }
+        return $this->sendError('Data not found');
+    }
+
+    public function showCapaian($id)
+    {
+
+        $result = CapaianIndikatorKinerjaKegiatan::with('ikk')->where('id', $id)->first();
+        if ($result) {
             return $this->sendResponse($result, 'Data fetched');
         }
         return $this->sendError('Data not found');
@@ -93,9 +104,12 @@ class CapaianIndikatorKinerjaKegiatanController extends BaseController
             DB::beginTransaction();
             $result = CapaianIndikatorKinerjaKegiatan::findOrFail($id);
             $result->update([
+                'bulan'=>$data->bulan,
+                'tahun'=>$data->tahun,
                 'ikk_id' => $data->ikk->id,
                 'realisasi' => $data->realisasi,
                 'analisa' => $data->analisa,
+                'capaian' => $data->capaian,
                 'kegiatan' => $data->kegiatan,
                 'kendala' => $data->kendala,
                 'hambatan' => $data->hambatan,

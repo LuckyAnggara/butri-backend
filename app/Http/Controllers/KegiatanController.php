@@ -45,11 +45,11 @@ class KegiatanController extends BaseController
 
             DB::beginTransaction();
             $result = Kegiatan::create([
-                'name' => nl2br(trim($data->name)),
+                'name' => (trim($data->name)),
                 'tempat' => $data->tempat,
-                'output' => nl2br(trim($data->output)),
+                'output' => (trim($data->output)),
                 'jenis_kegiatan' => $data->jenis_kegiatan,
-                'notes' => nl2br(trim($data->notes)),
+                'notes' => (trim($data->notes)),
                 'start_at' => $startDate,
                 'end_at' => $endDate,
                 'unit_id' => $data->unit_id,

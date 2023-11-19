@@ -10,10 +10,14 @@ class LaporanWilayah extends Model
     use HasFactory;
 
     protected $fillable = [
+        'tahun',
+        'bulan',
         'name',
         'link',
         'ttd_name',
         'ttd_nip',
+                'ttd_tanggal',
+                'ttd_jabatan',
         'ttd_location',
         'group_id',
         'created_at',

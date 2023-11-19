@@ -93,7 +93,7 @@ Route::get(
 );
 Route::get(
     'laporan-view',
-    [LaporanCopyController::class, 'laporanIKK']
+    [LaporanCopyController::class, 'laporanCapaianProgramUnggulan']
 );
 Route::get(
     'laporan-download/{id}',
@@ -132,6 +132,11 @@ Route::resource('kegiatan', KegiatanController::class);
 Route::resource('capaian-program-unggulan', CapaianProgramUnggulanController::class);
 Route::resource('capaian-iku', CapaianIndikatorKegiatanUtamaController::class);
 Route::resource('capaian-ikk', CapaianIndikatorKinerjaKegiatanController::class);
+Route::get(
+    'capaian-ikk/capaian/{id}',
+    [CapaianIndikatorKinerjaKegiatanController::class, 'showCapaian']
+);
+
 
 // ADMIN
 Route::resource('user', AuthController::class);

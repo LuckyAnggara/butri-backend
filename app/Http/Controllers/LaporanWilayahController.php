@@ -56,10 +56,14 @@ class LaporanWilayahController extends BaseController
         try {
             DB::beginTransaction();
             $result = LaporanWilayah::create([
+                'tahun' => $data->tahun,
+                'bulan' => $data->bulan,
                 'name' => $name,
                 'link' => $name,
+                 'ttd_jabatan'=> $data->ttd_jabatan,
                 'ttd_name'  => $data->ttd_name,
                 'ttd_nip'  => $data->ttd_nip,
+                'ttd_tanggal'  => $data->ttd_tanggal,
                 'ttd_location'  => $data->ttd_location,
                 'group_id'  => $data->parameter->group,
                 'created_by' =>  $data->created_by,
