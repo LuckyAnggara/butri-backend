@@ -87,13 +87,13 @@ class EmployeController extends BaseController
                 'is_wa' =>  $data->is_wa ?? false,
                 'gender' =>  $data->gender,
                 'email' =>  $data->email,
-                'pangkat_id' =>  $data->pangkat_id,
-                'jabatan_id' =>  $data->jabatan_id,
-                'unit_id' =>  $data->unit_id,
-                'eselon_id' =>  $data->eselon_id ?? null,
-                'tmt_pangkat' => Carbon::createFromFormat('d M Y', $data->tmt_pangkat)->format('Y-m-d'),
-                'tmt_jabatan' =>  Carbon::createFromFormat('d M Y', $data->tmt_jabatan)->format('Y-m-d'),
-                'tmt_pensiun' => Carbon::createFromFormat('d M Y', $data->tmt_pensiun)->format('Y-m-d'),
+                'pangkat_id' =>  $data->pangkat->id,
+                'jabatan_id' =>  $data->jabatan->id,
+                'unit_id' =>  $data->unit->id,
+                'eselon_id' =>  $data->eselon->id ?? null,
+                'tmt_pangkat' => $data->tmt_pangkat ? Carbon::createFromFormat('d M Y', $data->tmt_pangkat)->format('Y-m-d'): null,
+                'tmt_jabatan' =>  $data->tmt_jabatan ? Carbon::createFromFormat('d M Y', $data->tmt_jabatan)->format('Y-m-d'): null,
+                'tmt_pensiun' => $data->tmt_pensiun ? Carbon::createFromFormat('d M Y', $data->tmt_pensiun)->format('Y-m-d') : null,
             ]);
 
             DB::commit();

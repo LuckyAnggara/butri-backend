@@ -37,7 +37,7 @@ class MutasiPegawaiController extends BaseController
                 $endDate = Carbon::createFromFormat('d M Y', $endDate)->format('Y-m-d 23:59:59');
                 return $query->whereBetween('mutasi_pegawais.created_at', [$startDate, $endDate]);
             })
-            ->orderBy('mutasi_pegawais.created_at', 'asc')
+            ->orderBy('mutasi_pegawais.created_at', 'desc')
             ->latest()
             ->paginate($perPage);
         return $this->sendResponse($data, 'Data fetched');
@@ -56,7 +56,7 @@ class MutasiPegawaiController extends BaseController
                     'jabatan_id' => $value->jabatan_id,
                     'jabatan_new_id' => $value->jabatan_new_id,
                     'unit_id' => $value->unit_id,
-                    'unit_new_id' => $value->unit_new_id,
+                    'unit_new_id' =>  $value->keluar == false ? $value->unit_new_id : 0,
                     'keluar' => $value->keluar ?? false,
                     // 'masuk' => $value->masuk ?? false,
                     'created_by' =>  $data->created_by,
@@ -64,13 +64,16 @@ class MutasiPegawaiController extends BaseController
                 ]);
 
                 $pegawai = Employe::find($value->id);
-                $pegawai->tmt_jabatan = Carbon::createFromFormat('d M Y', $data->date)->format('Y-m-d');
-                $pegawai->jabatan_id = $item->jabatan_new_id;
-                $pegawai->unit_id = $item->unit_new_id;
-                $pegawai->save();
                 if($item->keluar == true){
                     $pegawai->delete();
+                }else{
+                    $pegawai->tmt_jabatan = Carbon::createFromFormat('d M Y', $data->date)->format('Y-m-d');
+                    $pegawai->jabatan_id = $item->jabatan_new_id;
+                    $pegawai->unit_id = $item->unit_new_id;
+                    $pegawai->save();
                 }
+             
+              
                 $result[] = $item;
             }
             DB::commit();
@@ -87,6 +90,10 @@ class MutasiPegawaiController extends BaseController
         try {
             $data = MutasiPegawai::find($id);
             if ($data) {
+                if($data->keluar == 1){
+                    $pegawai = Employe::withTrashed()->where('id',$data->employe_id);
+                    $pegawai->restore();
+                }
                 $data->delete();
                 DB::commit();
                 return $this->sendResponse($data, 'Data berhasil dihapus', 200);

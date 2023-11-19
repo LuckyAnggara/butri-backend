@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DetailPengembangan;
+use App\Models\Employe;
 use App\Models\Pengembangan;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -52,13 +53,24 @@ class PengembanganController extends BaseController
                 'created_by' =>  $data->created_by,
             ]);
             if ($result) {
-                foreach ($data->list as $key => $value) {
+                if($data->semuaPegawai == true){
+                    $pegawais = Employe::WhereNull('tmt_pensiun')->orWhereNot('tmt_pensiun', '<=', Carbon::today())->get();
+                    foreach ($pegawais as $key => $pegawai) {
+                        DetailPengembangan::create([
+                            'pengembangan_id' => $result->id,
+                            'employe_id' => $pegawai->id,
+                            'status' => 'LULUS',
+                        ]);
+                    }
+                }else{
+                    foreach ($data->list as $key => $value) {
                     DetailPengembangan::create([
                         'pengembangan_id' => $result->id,
                         'employe_id' => $value->id,
                         'status' => 'LULUS',
                     ]);
-                }
+                    }
+                }            
             }
 
             DB::commit();
