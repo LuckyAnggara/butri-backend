@@ -52,7 +52,7 @@ class DataPengawasanController extends BaseController
                 'start_at' =>  $startDate,
                 'end_at' => $endDate,
                 'location' => $data->location,
-                'output' => $data->output,
+                'output' => $data->output ?? '-',
                 'unit_id' => $data->unit_id,
                 'created_by' => $data->created_by,
             ]);

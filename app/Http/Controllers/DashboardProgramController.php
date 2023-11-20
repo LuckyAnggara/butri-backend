@@ -137,7 +137,7 @@ class DashboardProgramController extends BaseController
 
 
         foreach ($jenisPengawasan as $key => $value) {
-            $result = DataPengawasan::where('jenis_pengawasan_id', $value->id)->where('tahun',  $tahun)->where('bulan', $bulan)->get()->count();
+            $result = DataPengawasan::where('jenis_pengawasan_id', $value->id)->where('tahun',  $tahun)->where('bulan', '<=', $bulan)->get()->count();
             $dataPengawasan[] = new Pengawasan($value->name, $result);
         }
 
