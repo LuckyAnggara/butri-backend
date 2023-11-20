@@ -69,7 +69,7 @@ class LaporanCopyController extends BaseController
                 'bulan' => $parameter->bulan,
                 'name' => $name,
                 'link' => $name,
-                'ttd_jabatan'=> $data->ttd_jabatan,
+                'ttd_jabatan' => $data->ttd_jabatan,
                 'ttd_name'  => $data->ttd_name,
                 'ttd_nip'  => $data->ttd_nip,
                 'ttd_tanggal'  => $ttd_tanggal,
@@ -144,7 +144,8 @@ class LaporanCopyController extends BaseController
         return $groupAll;
     }
 
-    public function generate($data){
+    public function generate($data)
+    {
         $parameter = $data->parameter;
         $ttd = $data;
 
@@ -163,7 +164,7 @@ class LaporanCopyController extends BaseController
 
         $kepegawaian = $this->laporanKepegawaian($parameter);
         $templateProcessor->setValue('total_pegawai', $kepegawaian['total_pegawai']);
-        // $templateProcessor->setValue('total_pegawai_laki', $$kepegawaian['total_pegawai_laki']);
+        $templateProcessor->setValue('total_pegawai_laki', $kepegawaian['total_pegawai_laki']);
         $templateProcessor->setValue('total_pegawai_perempuan', $kepegawaian['total_pegawai_perempuan']);
         $templateProcessor->setComplexBlock('tabel_total_pegawai', $kepegawaian['tabel_total_pegawai']);
         $templateProcessor->setComplexBlock('tabel_kepangkatan', $kepegawaian['tabel_kepangkatan']);
@@ -176,7 +177,7 @@ class LaporanCopyController extends BaseController
         $templateProcessor->setComplexBlock('tabel_per_kegiatan', $anggaran['tabel_per_kegiatan']);
         $templateProcessor->setComplexBlock('tabel_per_belanja', $anggaran['tabel_per_belanja']);
 
-        
+
         $iku = $this->laporanIKU($parameter);
         $templateProcessor->setComplexBlock('tabel_capaian_iku', $iku);
 
@@ -190,7 +191,7 @@ class LaporanCopyController extends BaseController
         $templateProcessor->setComplexBlock('tabel_capaian_ikk_7', $ikk['tabel_capaian_ikk_7']);
 
         $pengawasan = $this->laporanDataPengawasan($parameter);
-        
+
         $templateProcessor->setComplexBlock('tabel_rekapitulasi_pengawasan', $pengawasan['tabel_rekapitulasi_pengawasan']);
         $templateProcessor->setComplexBlock('tabel_detail_pengawasan', $pengawasan['tabel_detail_pengawasan']);
 
@@ -211,16 +212,15 @@ class LaporanCopyController extends BaseController
         $pengelolaanMedia = $this->laporanPengelolaanMedia($parameter);
         $templateProcessor->setComplexBlock('tabel_pengelolaan_media', $pengelolaanMedia);
 
-        
+
         $programUnggulan = $this->laporanCapaianProgramUnggulan($parameter);
         $templateProcessor->setComplexBlock('tabel_capaian_program_unggulan', $programUnggulan);
 
         $time = Carbon::now()->format('is');
-        $name = 'Laporan' . $monthName .$parameter->tahun.$time. '.docx';
+        $name = 'Laporan' . $monthName . $parameter->tahun . $time . '.docx';
         $templateProcessor->saveAs(public_path($name));
 
         return $name;
-
     }
 
     public function laporanCapaianProgramUnggulan()
@@ -228,17 +228,17 @@ class LaporanCopyController extends BaseController
         $tahun =  2023;
         $bulan =  11;
 
-        $breaks = array("<br />","<br>","<br/>");  
+        $breaks = array("<br />", "<br>", "<br/>");
         $programUnggulan = ProgramUnggulan::with('list')->where('tahun', $tahun)->get();
 
         foreach ($programUnggulan as $key => $value) {
-           $value->jumlah = $value->list->count();
+            $value->jumlah = $value->list->count();
         }
 
-          // TABEL CAPAIAN IKU
+        // TABEL CAPAIAN IKU
         $styleTable = array('borderSize' => 6, 'borderColor' => '006699', 'cellMargin' => 80);
         $styleCell = array('valign' => 'center', 'size' => 11);
-        $styleCellSpan = array('valign' => 'center', 'size' => 11, 'gridSpan'=>5);
+        $styleCellSpan = array('valign' => 'center', 'size' => 11, 'gridSpan' => 5);
         $headerTableStyle = array('bold' => true, 'align' => 'center');
         // ADD TABLE
         $table = new Table($styleTable);
@@ -264,7 +264,7 @@ class LaporanCopyController extends BaseController
         // $styleCell = array('valign' => 'center', 'size' => 11);
         // $styleCellSpan = array('valign' => 'center', 'size' => 11, 'gridSpan'=>5);
         // $headerTableStyle = array('bold' => true, 'align' => 'center');
-   
+
 
         // // ADD TABLE
         // $table = new Table($styleTable);
@@ -309,7 +309,7 @@ class LaporanCopyController extends BaseController
         $styleTable = array('borderSize' => 6, 'borderColor' => '006699', 'cellMargin' => 80);
         $styleCell = array('valign' => 'center', 'size' => 11);
         $headerTableStyle = array('bold' => true, 'align' => 'center');
-         // ADD TABLE
+        // ADD TABLE
         $table = new Table($styleTable);
         $table->addRow();
         $table->addCell(1000, $styleCell)->addText('Jenis', $headerTableStyle);
@@ -436,7 +436,7 @@ class LaporanCopyController extends BaseController
             $ori = [$data1, $data2, $data3];
         }
 
-         // BPK
+        // BPK
         $styleTable = array('borderSize' => 6, 'borderColor' => '006699', 'cellMargin' => 80);
         $styleCell = array('valign' => 'center', 'size' => 11);
         $headerTableStyle = array('bold' => true, 'align' => 'center');
@@ -487,11 +487,10 @@ class LaporanCopyController extends BaseController
             'tabel_bpkp' => $tabel_bpkp,
             'tabel_ori' => $tabel_ori,
         ];
-
     }
 
 
-   
+
 
     public function laporanMonitoringInternal($parameter)
     {
@@ -504,8 +503,8 @@ class LaporanCopyController extends BaseController
         // TABEL CAPAIAN IKU
         $cellRowSpan = array('vMerge' => 'restart', 'align' => 'center', 'valign' => 'center', 'borderBottomSize' => 18,);
         $cellRowContinue = array('vMerge' => 'continue',);
-        $cellColSpan = array('gridSpan' => 2, 'valign' => 'center', );
-        $cellVCentered = array('valign' => 'center', );
+        $cellColSpan = array('gridSpan' => 2, 'valign' => 'center',);
+        $cellVCentered = array('valign' => 'center',);
         $styleTable = array('borderSize' => 6,  'cellMargin' => 80);
         $styleCell = array('valign' => 'center', 'size' => 11);
         $headerTableStyle = array('bold' => true, 'align' => 'center');
@@ -561,7 +560,6 @@ class LaporanCopyController extends BaseController
         $table->addCell(2000)->addText(number_format(round($totalBtlNominal)), $headerTableStyle);
 
         return $table;
-
     }
 
 
@@ -570,12 +568,12 @@ class LaporanCopyController extends BaseController
         $tahun = $parameter->tahun;
         $bulan = $parameter->bulan;
 
-        $breaks = array("<br />","<br>","<br/>");  
+        $breaks = array("<br />", "<br>", "<br/>");
 
 
-        $kegiatans = Kegiatan::with('unit')->whereYear('start_at', $tahun)->whereMonth('start_at',$bulan)->get();
+        $kegiatans = Kegiatan::with('unit')->whereYear('start_at', $tahun)->whereMonth('start_at', $bulan)->get();
 
-         // TABEL CAPAIAN IKU
+        // TABEL CAPAIAN IKU
         $styleTable = array('borderSize' => 6, 'borderColor' => '006699', 'cellMargin' => 80,);
         $styleCell = array('valign' => 'center', 'size' => 11);
         $headerTableStyle = array('bold' => true, 'align' => 'center');
@@ -594,21 +592,19 @@ class LaporanCopyController extends BaseController
             $tabel_kegiatan->addCell(2000)->addText($kegiatan->unit->name);
             $tabel_kegiatan->addCell(6500)->addText(str_ireplace($breaks, "\r\n", $kegiatan->name));
             $tabel_kegiatan->addCell(1500)->addText($kegiatan->jenis_kegiatan);
-             $tabel_kegiatan->addCell(4000)->addText($kegiatan->tempat . '</w:t><w:br/><w:t>' .Carbon::create($kegiatan->start_at)->format('d F Y') . ' s.d ' . Carbon::create($kegiatan->start_at)->format('d F Y'));
+            $tabel_kegiatan->addCell(4000)->addText($kegiatan->tempat . '</w:t><w:br/><w:t>' . Carbon::create($kegiatan->start_at)->format('d F Y') . ' s.d ' . Carbon::create($kegiatan->start_at)->format('d F Y'));
         }
 
         return $tabel_kegiatan;
-
-
     }
 
     public function laporanDataPengawasan($parameter)
     {
         $tahun = $parameter->tahun;
         $bulan = $parameter->bulan;
-        
-        
-        $breaks = array("<br />","<br>","<br/>"); 
+
+
+        $breaks = array("<br />", "<br>", "<br/>");
 
         $jenisPengawasan = JenisPengawasan::all();
         foreach ($jenisPengawasan as $key => $value) {
@@ -626,7 +622,7 @@ class LaporanCopyController extends BaseController
         // TABEL CAPAIAN IKU
         $styleTable = array('borderSize' => 6, 'borderColor' => '006699', 'cellMargin' => 80);
         $styleCell = array('valign' => 'center', 'size' => 11);
-        $styleCellSpan = array('valign' => 'center', 'size' => 11, 'gridSpan'=>5);
+        $styleCellSpan = array('valign' => 'center', 'size' => 11, 'gridSpan' => 5);
         $headerTableStyle = array('bold' => true, 'align' => 'center');
         // ADD TABLE
         $tabel_rekapitulasi_pengawasan = new Table($styleTable);
@@ -656,29 +652,28 @@ class LaporanCopyController extends BaseController
         $number = 0;
         foreach ($jenisPengawasan as $key => $pengawasan) {
             $tabel_detail_pengawasan->addRow();
-            $tabel_detail_pengawasan->addCell(4000, $styleCellSpan)->addText(++$number . '. '. $pengawasan->name, $headerTableStyle);
-            if($pengawasan->jumlah == 0){
-                    $tabel_detail_pengawasan->addRow();
-                    $tabel_detail_pengawasan->addCell(4000, $styleCellSpan)->addText('nihil');
-            }else{
+            $tabel_detail_pengawasan->addCell(4000, $styleCellSpan)->addText(++$number . '. ' . $pengawasan->name, $headerTableStyle);
+            if ($pengawasan->jumlah == 0) {
+                $tabel_detail_pengawasan->addRow();
+                $tabel_detail_pengawasan->addCell(4000, $styleCellSpan)->addText('nihil');
+            } else {
                 $num = 0;
                 foreach ($pengawasan->detail as $key => $detail) {
                     $tabel_detail_pengawasan->addRow();
                     $tabel_detail_pengawasan->addCell(500)->addText(++$num);
                     $tabel_detail_pengawasan->addCell(1500)->addText($detail->unit->name);
-                    $tabel_detail_pengawasan->addCell(6000)->addText(str_ireplace($breaks, "\r\n",$detail->name));
-                    $tabel_detail_pengawasan->addCell(3000)->addText($detail->location . '</w:t><w:br/><w:t>' .Carbon::create($detail->start_at)->format('d F Y') . ' s.d ' . Carbon::create($detail->start_at)->format('d F Y'));
+                    $tabel_detail_pengawasan->addCell(6000)->addText(str_ireplace($breaks, "\r\n", $detail->name));
+                    $tabel_detail_pengawasan->addCell(3000)->addText($detail->location . '</w:t><w:br/><w:t>' . Carbon::create($detail->start_at)->format('d F Y') . ' s.d ' . Carbon::create($detail->start_at)->format('d F Y'));
                     $tabel_detail_pengawasan->addCell(3000)->addText($detail->output);
                 }
             }
         }
 
-    
+
         return  [
             'tabel_rekapitulasi_pengawasan' => $tabel_rekapitulasi_pengawasan,
             'tabel_detail_pengawasan' => $tabel_detail_pengawasan,
         ];
-
     }
 
 
@@ -747,7 +742,7 @@ class LaporanCopyController extends BaseController
         $headerTableStyle = array('bold' => true, 'align' => 'center');
         // ADD TABLE
         $number = 0;
-         foreach ($groupAll as $key => $value) {
+        foreach ($groupAll as $key => $value) {
             ++$number;
             $table = new Table($styleTable);
             $table->addRow();
@@ -764,7 +759,7 @@ class LaporanCopyController extends BaseController
                 $table->addCell(3000)->addText(str_replace('<br />', '</w:t><w:br/><w:t>', $ikk->realisasi->analisa ?? ''));
                 $table->addCell(3000)->addText(str_replace('<br />', '</w:t><w:br/><w:t>', $ikk->realisasi->kendala ?? ''));
             }
-            $data['tabel_capaian_ikk_'.$number] = $table; 
+            $data['tabel_capaian_ikk_' . $number] = $table;
         }
         return $data;
     }
@@ -875,8 +870,8 @@ class LaporanCopyController extends BaseController
             $tabel_per_belanja->addCell(2000)->addText(number_format(round($belanja->realisasi_saat_ini, 2)));
             $tabel_per_belanja->addCell(500)->addText(round(($belanja->realisasi_saat_ini / $belanja->pagu) * 100, 2) . '%');
         }
-     
-            $realisasi = [
+
+        $realisasi = [
             'totalRealisasi' => $totalRealisasi,
             'totalPagu' => $totalPagu,
             'realisasiKegiatan' => $realisasiKegiatan,
@@ -884,26 +879,24 @@ class LaporanCopyController extends BaseController
         ];
 
         return  [
-        'total_realisasi' => number_format(round($realisasi['totalRealisasi'], 2)),
-        'total_pagu' => number_format(round($realisasi['totalPagu'], 2)),
-        'total_persen_realisasi_anggaran' => number_format(round(($realisasi['totalRealisasi']/$realisasi['totalPagu']) * 100),2),
-        'tabel_per_kegiatan' => $tabel_per_kegiatan,
-        'tabel_per_belanja' => $tabel_per_belanja,
+            'total_realisasi' => number_format(round($realisasi['totalRealisasi'], 2)),
+            'total_pagu' => number_format(round($realisasi['totalPagu'], 2)),
+            'total_persen_realisasi_anggaran' => number_format(round(($realisasi['totalRealisasi'] / $realisasi['totalPagu']) * 100), 2),
+            'tabel_per_kegiatan' => $tabel_per_kegiatan,
+            'tabel_per_belanja' => $tabel_per_belanja,
         ];
-    
-  
     }
 
     public function laporanKepegawaian($parameter)
     {
         $tahun = $parameter->tahun;
         $bulan = $parameter->bulan;
-        
+
 
         $date = Carbon::createFromFormat('Y-m-d', $tahun . '-' . $bulan . '-' . '28');
         $dateQuery = $date->format('Y-m-d 23:59:59');
 
-        $pegawai = Employe::whereDate('created_at', '<=', $dateQuery)->get();
+        $pegawai = Employe::all();
         $mutasi = MutasiPegawai::whereMonth('created_at',  $dateQuery)->get();
         $pengembangan = Pengembangan::whereMonth('created_at',  $dateQuery)->get();
         $kgb = KenaikanGajiBerkala::whereMonth('created_at',  $dateQuery)->get();
@@ -925,18 +918,18 @@ class LaporanCopyController extends BaseController
 
         $umum = [
             'total_pegawai' => $pegawai->count(),
-            'total_pegawai_laki'=> $pegawai->where('gender', 'LAKI LAKI')->count(),
-            'total_pegawai_perempuan'=> $pegawai->where('gender', 'PEREMPUAN')->count(),
+            'total_pegawai_laki' => $pegawai->where('gender', 'LAKI LAKI')->count(),
+            'total_pegawai_perempuan' => $pegawai->where('gender', 'PEREMPUAN')->count(),
             'mutasi' => $mutasi->count(),
             'pengembangan' => $pengembangan->count(),
             'kgb' => $kgb->count(),
             'kepangkatan' => $kepangkatan->count(),
             'pensiun' => $pensiun->count(),
-            'pangkat' => $pangkat, 
+            'pangkat' => $pangkat,
             'jabatan' => $jabatan,
         ];
 
-   
+
 
         $styleTable = array('borderSize' => 6, 'borderColor' => '006699', 'cellMargin' => 80);
         $styleCell = array('valign' => 'center', 'size' => 11);
@@ -956,7 +949,7 @@ class LaporanCopyController extends BaseController
         $tabel_total_pegawai->addCell(500, $styleCell)->addText('2');
         $tabel_total_pegawai->addCell(3000, $styleCell)->addText('Perempuan');
         $tabel_total_pegawai->addCell(2000, $styleCell)->addText($umum['total_pegawai_perempuan']);
-    
+
         $data = [];
 
         // ADD TABLE
@@ -994,15 +987,13 @@ class LaporanCopyController extends BaseController
         }
 
         $data = [
-        'total_pegawai_perempuan' => $umum['total_pegawai_perempuan'],
-        'total_pegawai_laki' => $umum['total_pegawai_laki'],
-        'total_pegawai' => $umum['total_pegawai'],
-        'tabel_jabatan'=> $tabel_jabatan,
-        'tabel_kepangkatan'=> $tabel_kepangkatan,
-        'tabel_total_pegawai'=> $tabel_total_pegawai
-    ];
+            'total_pegawai_perempuan' => $umum['total_pegawai_perempuan'],
+            'total_pegawai_laki' => $umum['total_pegawai_laki'],
+            'total_pegawai' => $umum['total_pegawai'],
+            'tabel_jabatan' => $tabel_jabatan,
+            'tabel_kepangkatan' => $tabel_kepangkatan,
+            'tabel_total_pegawai' => $tabel_total_pegawai
+        ];
         return $data;
-
-      
     }
 }
