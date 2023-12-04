@@ -17,7 +17,7 @@ class MutasiPegawaiController extends BaseController
         $startDate = $request->input('start-date');
         $endDate = $request->input('end-date');
 
-        $data = MutasiPegawai::select('mutasi_pegawais.*')->with('pegawai','jabatan','jabatan_new','unit','unit_new')
+        $data = MutasiPegawai::select('mutasi_pegawais.*')->with('pegawai', 'jabatan', 'jabatan_new', 'unit', 'unit_new')
             ->join('employes', 'employes.id', '=', 'mutasi_pegawais.employe_id')
             ->when($name, function ($query, $name) {
                 return $query->where('employes.name', 'like', '%' . $name . '%')
@@ -25,7 +25,7 @@ class MutasiPegawaiController extends BaseController
                     ->orWhere('mutasi_pegawais.nomor_sk', 'like', '%' . $name . '%')
                     ->orWhere('mutasi_pegawais.notes', 'like', '%' . $name . '%');
             })
-        //  $data = MutasiPegawai::with('pegawai','jabatan','jabatan_new','unit','unit_new')
+            //  $data = MutasiPegawai::with('pegawai','jabatan','jabatan_new','unit','unit_new')
             // ->when($name, function ($query, $name) {
             //     return $query->where('employes.name', 'like', '%' . $name . '%')
             //         ->orWhere('employes.nip', 'like', '%' . $name . '%')
@@ -42,9 +42,10 @@ class MutasiPegawaiController extends BaseController
             ->paginate($perPage);
         return $this->sendResponse($data, 'Data fetched');
     }
-     public function store(Request $request)
+    public function store(Request $request)
     {
-         $data = json_decode($request->getContent());
+        $data = json_decode($request->getContent());
+
         try {
             DB::beginTransaction();
             $result = [];
@@ -56,7 +57,7 @@ class MutasiPegawaiController extends BaseController
                     'jabatan_id' => $value->jabatan_id,
                     'jabatan_new_id' => $value->jabatan_new_id,
                     'unit_id' => $value->unit_id,
-                    'unit_new_id' =>  $value->keluar == false ? $value->unit_new_id : 0,
+                    'unit_new_id' => $value->keluar ?? false ? 0 : $value->unit_new_id,
                     'keluar' => $value->keluar ?? false,
                     // 'masuk' => $value->masuk ?? false,
                     'created_by' =>  $data->created_by,
@@ -64,16 +65,15 @@ class MutasiPegawaiController extends BaseController
                 ]);
 
                 $pegawai = Employe::find($value->id);
-                if($item->keluar == true){
+                if ($item->keluar == true) {
                     $pegawai->delete();
-                }else{
+                } else {
                     $pegawai->tmt_jabatan = Carbon::createFromFormat('d M Y', $data->date)->format('Y-m-d');
                     $pegawai->jabatan_id = $item->jabatan_new_id;
                     $pegawai->unit_id = $item->unit_new_id;
                     $pegawai->save();
                 }
-             
-              
+
                 $result[] = $item;
             }
             DB::commit();
@@ -90,10 +90,15 @@ class MutasiPegawaiController extends BaseController
         try {
             $data = MutasiPegawai::find($id);
             if ($data) {
-                if($data->keluar == 1){
-                    $pegawai = Employe::withTrashed()->where('id',$data->employe_id);
+                $pegawai = Employe::withTrashed()->where('id', $data->employe_id);
+                if ($data->keluar == 1) {
                     $pegawai->restore();
+                } else {
+                    $pegawai->unit_id = $data->unit_id;
+                    $pegawai->jabatan_id = $data->jabatan_id;
+                    $pegawai->save();
                 }
+
                 $data->delete();
                 DB::commit();
                 return $this->sendResponse($data, 'Data berhasil dihapus', 200);

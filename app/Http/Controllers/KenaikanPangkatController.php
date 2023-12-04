@@ -17,7 +17,7 @@ class KenaikanPangkatController extends BaseController
         $startDate = $request->input('start-date');
         $endDate = $request->input('end-date');
 
-        $data = KenaikanPangkat::select('kenaikan_pangkats.*')->with('pegawai','pangkat','pangkat_new')
+        $data = KenaikanPangkat::select('kenaikan_pangkats.*')->with('pegawai', 'pangkat', 'pangkat_new')
             ->join('employes', 'employes.id', '=', 'kenaikan_pangkats.employe_id')
             ->when($name, function ($query, $name) {
                 return $query->where('employes.name', 'like', '%' . $name . '%')
@@ -35,9 +35,9 @@ class KenaikanPangkatController extends BaseController
             ->paginate($perPage);
         return $this->sendResponse($data, 'Data fetched');
     }
-     public function store(Request $request)
+    public function store(Request $request)
     {
-         $data = json_decode($request->getContent());
+        $data = json_decode($request->getContent());
         try {
             DB::beginTransaction();
             $result = [];
@@ -72,7 +72,13 @@ class KenaikanPangkatController extends BaseController
         try {
             $data = KenaikanPangkat::find($id);
             if ($data) {
+                $pegawai = Employe::find($data->employe_id);
+
+                $pegawai->pangkat_id = $data->pangkat_id;
+                $pegawai->save();
+
                 $data->delete();
+
                 DB::commit();
                 return $this->sendResponse($data, 'Data berhasil dihapus', 200);
             } else {

@@ -70,10 +70,11 @@ class PensiunController extends BaseController
         try {
             $data = Pensiun::find($id);
             if ($data) {
-                $data->delete();
                 $pegawai = Employe::find($data->employe_id);
                 $pegawai->tmt_pensiun = null;
                 $pegawai->save();
+
+                $data->delete();
                 DB::commit();
                 return $this->sendResponse($data, 'Data berhasil dihapus', 200);
             } else {

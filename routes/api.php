@@ -21,6 +21,7 @@ use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\JenisPengawasanController;
 use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\KenaikanGajiBerkalaController;
+use App\Http\Controllers\KenaikanJenjangController;
 use App\Http\Controllers\KenaikanPangkatController;
 use App\Http\Controllers\KinerjaKeuanganController;
 use App\Http\Controllers\LaporanController;
@@ -75,6 +76,7 @@ Route::resource('pengembangan', PengembanganController::class);
 Route::resource('mutasi', MutasiPegawaiController::class);
 Route::resource('kepangkatan', KenaikanPangkatController::class);
 Route::resource('kgb', KenaikanGajiBerkalaController::class);
+Route::resource('kenaikan-jenjang', KenaikanJenjangController::class);
 
 // PROGRAM dan PELAPORAN // Admin
 Route::resource('indikator-kinerja-utama', IndikatorKinerjaUtamaController::class);
@@ -127,7 +129,6 @@ Route::resource('dashboard-wilayah', DashboardWilayahController::class);
 Route::resource('dashboard-keuangan', DashboardKeuanganController::class);
 Route::resource('dashboard-kepegawaian', DashboardKepegawaianController::class);
 Route::resource('dashboard-program', DashboardProgramController::class);
-
 
 // ALL 
 Route::resource('kegiatan', KegiatanController::class);
