@@ -21,12 +21,17 @@ class EmployeController extends BaseController
                 $query->WhereNull('tmt_pensiun')
                     ->orWhereNot('tmt_pensiun', '<=', Carbon::today());
             })
+
             ->when($name, function ($query, $name) {
                 return $query->where('name', 'like', '%' . $name . '%')
-                    ->orWhere('nip', 'like', '%' . $name . '%');
+                    ->orWhere('nip', 'like', '%' . $name . '%')->orWhereHas('unit', function ($query) use ($name) {
+                        $query->where('name', 'like', '%' . $name . '%');
+                    })->orWhereHas('jabatan', function ($query) use ($name) {
+                        $query->where('name', 'like', '%' . $name . '%');
+                    });
             })
             ->when($unit, function ($query, $unit) {
-                return $query->where('unit_id',$unit);
+                return $query->where('unit_id', $unit);
             })
             ->orderBy('nip', 'asc')
             ->latest()
@@ -91,8 +96,8 @@ class EmployeController extends BaseController
                 'jabatan_id' =>  $data->jabatan->id,
                 'unit_id' =>  $data->unit->id,
                 'eselon_id' =>  $data->eselon->id ?? null,
-                'tmt_pangkat' => $data->tmt_pangkat ? Carbon::createFromFormat('d M Y', $data->tmt_pangkat)->format('Y-m-d'): null,
-                'tmt_jabatan' =>  $data->tmt_jabatan ? Carbon::createFromFormat('d M Y', $data->tmt_jabatan)->format('Y-m-d'): null,
+                'tmt_pangkat' => $data->tmt_pangkat ? Carbon::createFromFormat('d M Y', $data->tmt_pangkat)->format('Y-m-d') : null,
+                'tmt_jabatan' =>  $data->tmt_jabatan ? Carbon::createFromFormat('d M Y', $data->tmt_jabatan)->format('Y-m-d') : null,
                 'tmt_pensiun' => $data->tmt_pensiun ? Carbon::createFromFormat('d M Y', $data->tmt_pensiun)->format('Y-m-d') : null,
             ]);
 

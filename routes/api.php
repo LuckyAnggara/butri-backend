@@ -34,6 +34,7 @@ use App\Http\Controllers\MonitoringTemuanOriController;
 use App\Http\Controllers\MutasiPegawaiController;
 use App\Http\Controllers\PangkatController;
 use App\Http\Controllers\PengelolaanMediaController;
+use App\Http\Controllers\PengelolaanTiController;
 use App\Http\Controllers\PengembanganController;
 use App\Http\Controllers\PensiunController;
 use App\Http\Controllers\PersuratanController;
@@ -112,6 +113,7 @@ Route::resource('monitoring-temuan-bpkp', MonitoringTemuanBpkpController::class)
 Route::resource('monitoring-temuan-ori', MonitoringTemuanOriController::class);
 Route::resource('monitoring-pengaduan', MonitoringPengaduanController::class);
 Route::resource('pengelolaan-media', PengelolaanMediaController::class);
+Route::resource('pengelolaan-ti', PengelolaanTiController::class);
 
 // KEUANGAN
 Route::resource('dipa', DipaController::class);

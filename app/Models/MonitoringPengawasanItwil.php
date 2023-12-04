@@ -13,6 +13,7 @@ class MonitoringPengawasanItwil extends Model
     protected $fillable = [
         'bulan',
         'tahun',
+        'currency',
         'group_id',
         'temuan_jumlah',
         'temuan_nominal',

@@ -32,7 +32,7 @@ class DashboardWilayahController extends BaseController
         foreach ($jenisPengawasan as $key => $value) {
             $result = DataPengawasan::where('jenis_pengawasan_id', $value->id)->where('unit_id', $unit_id)->where('tahun',  $tahun)
                 ->when($bulan, function ($query, $bulan) {
-                    return $query->whereMonth('created_at', '<=', $bulan);
+                    return $query->where('bulan', '<=', $bulan);
                 })
                 ->get()->count();
             $dataPengawasan[] = new Pengawasan($value->name, $result);

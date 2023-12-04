@@ -9,7 +9,14 @@ class SatuanKerjaController extends BaseController
 {
     public function index(Request $request)
     {
-        $data = SatuanKerja::all();
+
+        $perPage = $request->input('limit', 5);
+        $name = $request->input('name');
+
+        $data = SatuanKerja::when($name, function ($query, $name) {
+            return $query->where('name', 'like', '%' . $name . '%');
+        })->latest()
+            ->paginate($perPage);
         return $this->sendResponse($data, 'Data fetched');
     }
 }

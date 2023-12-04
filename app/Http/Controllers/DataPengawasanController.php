@@ -100,4 +100,23 @@ class DataPengawasanController extends BaseController
             return $this->sendError($e->getMessage(), 'Error');
         }
     }
+
+
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+        try {
+            $data = DataPengawasan::find($id);
+            if ($data) {
+                $data->delete();
+                DB::commit();
+                return $this->sendResponse($data, 'Data berhasil dihapus', 200);
+            } else {
+                return $this->sendError('', 'Data tidak ditemukan', 404);
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError('Terjadi kesalahan', $e->getMessage(), 500);
+        }
+    }
 }

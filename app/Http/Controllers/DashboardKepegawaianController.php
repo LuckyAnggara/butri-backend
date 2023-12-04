@@ -11,6 +11,7 @@ use App\Models\Pangkat;
 use App\Models\Pengembangan;
 use App\Models\Pensiun;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class DashboardKepegawaianController extends BaseController
@@ -20,7 +21,8 @@ class DashboardKepegawaianController extends BaseController
 
         $today = Carbon::now(); // Mengambil tanggal hari ini menggunakan Carbon
         $date = $request->input('date');
-        
+        $group = $request->input('group');
+
         if ($date) {
             $date = Carbon::createFromFormat('d M Y', $date);
             $dateQuery = $date->format('Y-m-d 23:59:59');
@@ -28,7 +30,15 @@ class DashboardKepegawaianController extends BaseController
             $dateQuery = $today;
         }
 
-        $pegawai = Employe::whereDate('created_at', '<=', $dateQuery)->get();
+
+        if ($group) {
+            $pegawai = Employe::whereHas('unit', function ($query) use ($group) {
+                $query->where('group_id', $group);
+            })->get();
+        } else {
+            $pegawai = Employe::all();
+        }
+
         $mutasi = MutasiPegawai::whereMonth('created_at',  $dateQuery)->get();
         $pengembangan = Pengembangan::whereMonth('created_at',  $dateQuery)->get();
         $kgb = KenaikanGajiBerkala::whereMonth('created_at',  $dateQuery)->get();
@@ -48,7 +58,9 @@ class DashboardKepegawaianController extends BaseController
 
         $pangkat = Pangkat::all();
 
-        $jabatan = Jabatan::all();
+        $jabatan = Jabatan::with('pegawai.unit')->whereHas('pegawai.unit', function ($query) use ($group) {
+            $query->where('group_id', $group);
+        })->get();
 
         foreach ($pangkat as $key => $value) {
             $count = Employe::where('pangkat_id', $value->id)->whereDate('created_at', '<=', $dateQuery)->get()->count();

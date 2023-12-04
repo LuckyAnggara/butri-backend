@@ -148,7 +148,7 @@ class LaporanCopyController extends BaseController
     {
         $parameter = $data->parameter;
         $ttd = $data;
-
+        // \PhpOffice\PhpWord\Settings::setOutputEscapingEnabled(true);
         $dateForMonth = Carbon::create(null, $parameter->bulan, 1);
         // Format the date to get the month name
         $monthName = $dateForMonth->format('F');
@@ -215,6 +215,7 @@ class LaporanCopyController extends BaseController
 
         $programUnggulan = $this->laporanCapaianProgramUnggulan($parameter);
         $templateProcessor->setComplexBlock('tabel_capaian_program_unggulan', $programUnggulan);
+
 
         $time = Carbon::now()->format('is');
         $name = 'Laporan' . $monthName . $parameter->tahun . $time . '.docx';
@@ -590,9 +591,9 @@ class LaporanCopyController extends BaseController
             $tabel_kegiatan->addRow();
             $tabel_kegiatan->addCell(500)->addText(++$number);
             $tabel_kegiatan->addCell(2000)->addText($kegiatan->unit->name);
-            $tabel_kegiatan->addCell(6500)->addText(str_ireplace($breaks, "\r\n", $kegiatan->name));
+            $tabel_kegiatan->addCell(6500)->addText(str_ireplace($breaks, "\r\n", $this->escapeSingleValue($kegiatan->name)));
             $tabel_kegiatan->addCell(1500)->addText($kegiatan->jenis_kegiatan);
-            $tabel_kegiatan->addCell(4000)->addText($kegiatan->tempat . '</w:t><w:br/><w:t>' . Carbon::create($kegiatan->start_at)->format('d F Y') . ' s.d ' . Carbon::create($kegiatan->start_at)->format('d F Y'));
+            $tabel_kegiatan->addCell(4000)->addText($this->escapeSingleValue($kegiatan->tempat) . "\r\n" . Carbon::create($kegiatan->start_at)->format('d F Y') . ' s.d ' . Carbon::create($kegiatan->start_at)->format('d F Y'));
         }
 
         return $tabel_kegiatan;
@@ -604,13 +605,14 @@ class LaporanCopyController extends BaseController
         $bulan = $parameter->bulan;
 
 
-        $breaks = array("<br />", "<br>", "<br/>");
+        $breaks = array("<br />", "<br>", "<br/>", ";", "/");
+        $breaks2 = array("&");
 
         $jenisPengawasan = JenisPengawasan::all();
         foreach ($jenisPengawasan as $key => $value) {
             $detail = DataPengawasan::where('jenis_pengawasan_id', $value->id)->with('unit')->where('tahun',  $tahun)
                 ->when($bulan, function ($query, $bulan) {
-                    return $query->where('bulan', '<=', $bulan);
+                    return $query->where('bulan', $bulan);
                 })
                 ->get();
             $count = $detail->count();
@@ -661,9 +663,9 @@ class LaporanCopyController extends BaseController
                 foreach ($pengawasan->detail as $key => $detail) {
                     $tabel_detail_pengawasan->addRow();
                     $tabel_detail_pengawasan->addCell(500)->addText(++$num);
-                    $tabel_detail_pengawasan->addCell(1500)->addText($detail->unit->name);
-                    $tabel_detail_pengawasan->addCell(6000)->addText(str_ireplace($breaks, "\r\n", $detail->name));
-                    $tabel_detail_pengawasan->addCell(3000)->addText($detail->location . '</w:t><w:br/><w:t>' . Carbon::create($detail->start_at)->format('d F Y') . ' s.d ' . Carbon::create($detail->start_at)->format('d F Y'));
+                    $tabel_detail_pengawasan->addCell(1500)->addText(trim($detail->unit->name));
+                    $tabel_detail_pengawasan->addCell(6000)->addText(str_ireplace($breaks, "\r\n", $this->escapeSingleValue($detail->name)));
+                    $tabel_detail_pengawasan->addCell(3000)->addText($this->escapeSingleValue($detail->location)  . "\r\n" . Carbon::create($detail->start_at)->format('d F Y') . ' s.d ' . Carbon::create($detail->start_at)->format('d F Y'));
                     $tabel_detail_pengawasan->addCell(3000)->addText($detail->output);
                 }
             }
@@ -676,6 +678,13 @@ class LaporanCopyController extends BaseController
         ];
     }
 
+    protected function escapeSingleValue($input)
+    {
+        $escaped = htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
+        // we don't want to escape the newline code, so we replace it with html tag again
+        $escaped_but_newlines_allowed = str_replace('&lt;/w:t&gt;&lt;w:br/&gt;&lt;w:t&gt;', '</w:t><w:br/><w:t>', $escaped);
+        return $escaped_but_newlines_allowed;
+    }
 
 
 
@@ -893,7 +902,7 @@ class LaporanCopyController extends BaseController
         $bulan = $parameter->bulan;
 
 
-        $date = Carbon::createFromFormat('Y-m-d', $tahun . '-' . $bulan . '-' . '28');
+        $date = Carbon::createFromFormat('Y-m-d', $tahun . '-' . $bulan . '-' . '31');
         $dateQuery = $date->format('Y-m-d 23:59:59');
 
         $pegawai = Employe::all();
@@ -906,7 +915,7 @@ class LaporanCopyController extends BaseController
         $jabatan = Jabatan::all();
 
         foreach ($pangkat as $key => $value) {
-            $count = Employe::where('pangkat_id', $value->id)->whereDate('created_at', '<=', $dateQuery)->get()->count();
+            $count = Employe::where('pangkat_id', $value->id)->whereMonth('created_at', '<=', $dateQuery)->get()->count();
 
             $value->jumlah = $count;
         }

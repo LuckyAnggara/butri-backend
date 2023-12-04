@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\MonitoringPengawasanItwil;
+use App\Models\SatuanKerja;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -13,6 +14,9 @@ class MonitoringPengawasanItwilController extends BaseController
         $tahun = $request->input('tahun');
         $bulan = $request->input('bulan');
         $unit = $request->input('unit');
+
+
+        // $data = SatuanKerja::all();
 
         $data = MonitoringPengawasanItwil::with('group')->when($tahun, function ($query, $tahun) {
             return $query->where('tahun', $tahun);
@@ -34,7 +38,7 @@ class MonitoringPengawasanItwilController extends BaseController
         $data = json_decode($request->getContent());
         try {
             DB::beginTransaction();
-            $exist = MonitoringPengawasanItwil::where('tahun', $data->tahun)->where('bulan', $data->bulan)->where('group_id', $data->group_id)->first();
+            $exist = MonitoringPengawasanItwil::where('tahun', $data->tahun)->where('bulan', $data->bulan)->where('currency', $data->currency)->where('group_id', $data->group_id)->first();
             if ($exist) {
                 $exist->delete();
             }
@@ -43,6 +47,7 @@ class MonitoringPengawasanItwilController extends BaseController
                     'bulan' => $data->bulan,
                     'tahun' => $data->tahun,
                     'group_id' => $data->group_id,
+                    'currency' => $data->currency ?? 'IDR',
                     'temuan_jumlah' => $data->temuan_jumlah,
                     'temuan_nominal' => $data->temuan_nominal,
                     'tl_jumlah' => $data->tl_jumlah,

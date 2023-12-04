@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('tahun');
             $table->string('bulan');
             $table->integer('group_id');
+            $table->string('currency')->default('IDR');
             $table->double('temuan_jumlah')->default(0);
             $table->double('temuan_nominal')->default(0);
             $table->double('tl_jumlah')->default(0);
