@@ -53,7 +53,7 @@ class PengembanganController extends BaseController
                 'created_by' =>  $data->created_by,
             ]);
             if ($result) {
-                if($data->semuaPegawai == true){
+                if ($data->semuaPegawai == true) {
                     $pegawais = Employe::WhereNull('tmt_pensiun')->orWhereNot('tmt_pensiun', '<=', Carbon::today())->get();
                     foreach ($pegawais as $key => $pegawai) {
                         DetailPengembangan::create([
@@ -62,15 +62,17 @@ class PengembanganController extends BaseController
                             'status' => 'LULUS',
                         ]);
                     }
-                }else{
+                    $result->jumlah_peserta = $pegawais->count();
+                    $result->save();
+                } else {
                     foreach ($data->list as $key => $value) {
-                    DetailPengembangan::create([
-                        'pengembangan_id' => $result->id,
-                        'employe_id' => $value->id,
-                        'status' => 'LULUS',
-                    ]);
+                        DetailPengembangan::create([
+                            'pengembangan_id' => $result->id,
+                            'employe_id' => $value->id,
+                            'status' => 'LULUS',
+                        ]);
                     }
-                }            
+                }
             }
 
             DB::commit();
@@ -80,7 +82,7 @@ class PengembanganController extends BaseController
             return $this->sendError($e->getMessage(), 'Failed to saved data');
         }
     }
-    
+
     public function show($id)
     {
         $result = Pengembangan::where('id', $id)

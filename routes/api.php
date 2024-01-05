@@ -34,17 +34,22 @@ use App\Http\Controllers\MonitoringTemuanBpkpController;
 use App\Http\Controllers\MonitoringTemuanOriController;
 use App\Http\Controllers\MutasiPegawaiController;
 use App\Http\Controllers\PangkatController;
+use App\Http\Controllers\PenetapanTujuanRisikoController;
 use App\Http\Controllers\PengelolaanMediaController;
 use App\Http\Controllers\PengelolaanTiController;
 use App\Http\Controllers\PengembanganController;
 use App\Http\Controllers\PensiunController;
 use App\Http\Controllers\PersuratanController;
+use App\Http\Controllers\ProgramKegiatanController;
 use App\Http\Controllers\ProgramUnggulanController;
 use App\Http\Controllers\RealiasaiAnggaranController;
+use App\Http\Controllers\SasaranKementerianController;
 use App\Http\Controllers\SatuanKerjaController;
 use App\Http\Controllers\UnitController;
 use App\Models\MonitoringPengaduan;
 use App\Models\MonitoringTemuanBpk;
+use App\Models\ProgramKegiatan;
+use App\Models\SasaranKementerian;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -59,6 +64,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware(['auth:sanctum'])->group(function () {
+
+    Route::resource('risiko/penetapan-tujuan', PenetapanTujuanRisikoController::class);
+    Route::resource('capaian-program-unggulan', CapaianProgramUnggulanController::class);
 });
 
 Route::resource('unit', UnitController::class);
@@ -132,7 +140,9 @@ Route::resource('dashboard-program', DashboardProgramController::class);
 
 // ALL 
 Route::resource('kegiatan', KegiatanController::class);
-Route::resource('capaian-program-unggulan', CapaianProgramUnggulanController::class);
+Route::resource('program-kegiatan', ProgramKegiatanController::class);
+Route::resource('sasaran-kementerian', SasaranKementerianController::class);
+
 Route::resource('capaian-iku', CapaianIndikatorKegiatanUtamaController::class);
 Route::resource('capaian-ikk', CapaianIndikatorKinerjaKegiatanController::class);
 Route::get(
