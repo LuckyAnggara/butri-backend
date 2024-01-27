@@ -26,12 +26,12 @@ class DatabaseSeeder extends Seeder
             UnitSeeder::class,
             RoleSeeder::class,
             UnitGroupSeeder::class,
-            // IKUSeeder::class,
-            // IKKSeeder::class,
-            // DipaSeeder::class,
-            // ProgramUnggulanSeeder::class,
+            IKUSeeder::class,
+            IKKSeeder::class,
+            DipaSeeder::class,
+            ProgramUnggulanSeeder::class,
             JenisPengawasanSeeder::class,
-            // EmployeSeeder::class,
+            EmployeSeeder::class,
         ]);
     }
 }

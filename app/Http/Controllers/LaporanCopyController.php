@@ -224,18 +224,18 @@ class LaporanCopyController extends BaseController
         return $name;
     }
 
-    public function laporanCapaianProgramUnggulan()
+    public function laporanCapaianProgramUnggulan($parameter)
     {
-        $tahun =  2023;
-        $bulan =  11;
+        $tahun = $parameter->tahun;
+        $bulan = $parameter->bulan;
 
         $breaks = array("<br />", "<br>", "<br/>");
         $programUnggulan = ProgramUnggulan::with('list')->where('tahun', $tahun)->get();
 
         foreach ($programUnggulan as $key => $value) {
-            $value->jumlah = $value->list->count();
+            $detail = CapaianProgramUnggulan::with('kegiatan')->whereMonth('created_at', $bulan)->whereYear('created_at', $tahun)->where('program_unggulan_id', $value->id)->get();
+            $value->jumlah = $detail->count();
         }
-
         // TABEL CAPAIAN IKU
         $styleTable = array('borderSize' => 6, 'borderColor' => '006699', 'cellMargin' => 80);
         $styleCell = array('valign' => 'center', 'size' => 11);

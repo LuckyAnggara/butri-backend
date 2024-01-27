@@ -67,6 +67,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::resource('risiko/penetapan-tujuan', PenetapanTujuanRisikoController::class);
     Route::resource('capaian-program-unggulan', CapaianProgramUnggulanController::class);
+    Route::resource('laporan-wilayah', LaporanWilayahController::class);
+    
+Route::get(
+    'laporan-wilayah-generate',
+    [LaporanWilayahController::class, 'generate']
+);
+Route::get(
+    'laporan-wilayah-download/{id}',
+    [LaporanWilayahController::class, 'download']
+);
+
 });
 
 Route::resource('unit', UnitController::class);
@@ -92,11 +103,6 @@ Route::resource('indikator-kinerja-kegiatan', IndikatorKinerjaKegiatanController
 Route::resource('program-unggulan', ProgramUnggulanController::class);
 
 Route::resource('laporan', LaporanCopyController::class);
-Route::resource('laporan-wilayah', LaporanWilayahController::class);
-Route::get(
-    'laporan-wilayah-download/{id}',
-    [LaporanWilayahController::class, 'download']
-);
 
 Route::get(
     'laporan-generate',
