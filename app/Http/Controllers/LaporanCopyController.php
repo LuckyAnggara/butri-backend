@@ -34,6 +34,7 @@ use App\Pengawasan;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
@@ -214,7 +215,9 @@ class LaporanCopyController extends BaseController
 
 
         $programUnggulan = $this->laporanCapaianProgramUnggulan($parameter);
-        $templateProcessor->setComplexBlock('tabel_capaian_program_unggulan', $programUnggulan);
+        // $templateProcessor->setComplexBlock('tabel_capaian_program_unggulan', $programUnggulan);
+        $templateProcessor->setComplexBlock('tabel_capaian_program_unggulan', $programUnggulan['tabel_capaian_program_unggulan']);
+        $templateProcessor->setComplexBlock('tabel_detail_program_unggulan', $programUnggulan['tabel_detail_program_unggulan']);
 
 
         $time = Carbon::now()->format('is');
@@ -224,7 +227,43 @@ class LaporanCopyController extends BaseController
         return $name;
     }
 
-    public function laporanCapaianProgramUnggulan($parameter)
+    // public function laporanCapaianProgramUnggulan($parameter)
+    // {
+    //     $tahun = $parameter->tahun;
+    //     $bulan = $parameter->bulan;
+
+    //     $breaks = array("<br />", "<br>", "<br/>");
+    //     $programUnggulan = ProgramUnggulan::with('list')->where('tahun', $tahun)->get();
+
+    //     foreach ($programUnggulan as $key => $value) {
+    //         $detail = CapaianProgramUnggulan::with('kegiatan')->whereMonth('created_at', $bulan)->whereYear('created_at', $tahun)->where('program_unggulan_id', $value->id)->get();
+    //         $value->jumlah = $detail->count();
+    //     }
+    //     // TABEL CAPAIAN IKU
+    //     $styleTable = array('borderSize' => 6, 'borderColor' => '006699', 'cellMargin' => 80);
+    //     $styleCell = array('valign' => 'center', 'size' => 11);
+    //     $styleCellSpan = array('valign' => 'center', 'size' => 11, 'gridSpan' => 5);
+    //     $headerTableStyle = array('bold' => true, 'align' => 'center');
+    //     // ADD TABLE
+    //     $table = new Table($styleTable);
+    //     $table->addRow();
+    //     $table->addCell(500, $styleCell)->addText('#', $headerTableStyle);
+    //     $table->addCell(5000, $styleCell)->addText('Nama Program', $headerTableStyle);
+    //     $table->addCell(1000, $styleCell)->addText('Total Kegiatan', $headerTableStyle);
+
+    //     $number = 0;
+    //     foreach ($programUnggulan as $key => $program) {
+    //         $table->addRow();
+    //         $table->addCell(500)->addText(++$number);
+    //         $table->addCell(5000)->addText($program->name);
+    //         $table->addCell(1000)->addText($program->jumlah);
+    //     }
+
+     
+    //     return $table;
+    // }
+
+     public function laporanCapaianProgramUnggulan ($parameter)
     {
         $tahun = $parameter->tahun;
         $bulan = $parameter->bulan;
@@ -233,70 +272,71 @@ class LaporanCopyController extends BaseController
         $programUnggulan = ProgramUnggulan::with('list')->where('tahun', $tahun)->get();
 
         foreach ($programUnggulan as $key => $value) {
-            $detail = CapaianProgramUnggulan::with('kegiatan')->whereMonth('created_at', $bulan)->whereYear('created_at', $tahun)->where('program_unggulan_id', $value->id)->get();
+            $detail = CapaianProgramUnggulan::with('kegiatan')->whereMonth('created_at', $bulan)->whereYear('created_at', $tahun)->where('program_unggulan_id', $value->id)->where('unit_id', Auth::user()->unit_id)->get();
             $value->jumlah = $detail->count();
         }
+
         // TABEL CAPAIAN IKU
         $styleTable = array('borderSize' => 6, 'borderColor' => '006699', 'cellMargin' => 80);
         $styleCell = array('valign' => 'center', 'size' => 11);
         $styleCellSpan = array('valign' => 'center', 'size' => 11, 'gridSpan' => 5);
         $headerTableStyle = array('bold' => true, 'align' => 'center');
         // ADD TABLE
-        $table = new Table($styleTable);
-        $table->addRow();
-        $table->addCell(500, $styleCell)->addText('#', $headerTableStyle);
-        $table->addCell(5000, $styleCell)->addText('Nama Program', $headerTableStyle);
-        $table->addCell(1000, $styleCell)->addText('Total Kegiatan', $headerTableStyle);
+        $tabel_capaian_program_unggulan = new Table($styleTable);
+        $tabel_capaian_program_unggulan->addRow();
+        $tabel_capaian_program_unggulan->addCell(500, $styleCell)->addText('#', $headerTableStyle);
+        $tabel_capaian_program_unggulan->addCell(5000, $styleCell)->addText('Nama Program', $headerTableStyle);
+        $tabel_capaian_program_unggulan->addCell(1000, $styleCell)->addText('Total Kegiatan', $headerTableStyle);
 
         $number = 0;
         foreach ($programUnggulan as $key => $program) {
-            $table->addRow();
-            $table->addCell(500)->addText(++$number);
-            $table->addCell(5000)->addText($program->name);
-            $table->addCell(1000)->addText($program->jumlah);
+            $tabel_capaian_program_unggulan->addRow();
+            $tabel_capaian_program_unggulan->addCell(500)->addText(++$number);
+            $tabel_capaian_program_unggulan->addCell(5000)->addText($program->name);
+            $tabel_capaian_program_unggulan->addCell(1000)->addText($program->jumlah);
         }
-
 
         // RINCIAN PROGRAM UNGGULAN
 
 
-        //  // TABEL CAPAIAN IKU
-        // $styleTable = array('borderSize' => 6, 'borderColor' => '006699', 'cellMargin' => 80);
-        // $styleCell = array('valign' => 'center', 'size' => 11);
-        // $styleCellSpan = array('valign' => 'center', 'size' => 11, 'gridSpan'=>5);
-        // $headerTableStyle = array('bold' => true, 'align' => 'center');
-
-
+        $styleTable = array('borderSize' => 6, 'borderColor' => '006699', 'cellMargin' => 80);
+        $styleCell = array('valign' => 'center', 'size' => 11);
+        $styleCellSpan = array('valign' => 'center', 'size' => 11, 'gridSpan'=>5);
+        $headerTableStyle = array('bold' => true, 'align' => 'center');
         // // ADD TABLE
-        // $table = new Table($styleTable);
-        // $table->addRow();
-        // $table->addCell(500, $styleCell)->addText('#', $headerTableStyle);
-        // $table->addCell(1500, $styleCell)->addText('Unit', $headerTableStyle);
-        // $table->addCell(6000, $styleCell)->addText('Nama Kegiatan', $headerTableStyle);
-        // $table->addCell(3000, $styleCell)->addText('Tmt dan Lokasi', $headerTableStyle);
-        // $table->addCell(3000, $styleCell)->addText('No dan Tgl LHP', $headerTableStyle);
+        $tabel_detail_program_unggulan = new Table($styleTable);
+        $tabel_detail_program_unggulan->addRow();
+        $tabel_detail_program_unggulan->addCell(500, $styleCell)->addText('#', $headerTableStyle);
+        $tabel_detail_program_unggulan->addCell(1000, $styleCell)->addText('Program', $headerTableStyle);
+        $tabel_detail_program_unggulan->addCell(6000, $styleCell)->addText('Nama Kegiatan', $headerTableStyle);
+        $tabel_detail_program_unggulan->addCell(3000, $styleCell)->addText('Tanggal Pelaksanaan', $headerTableStyle);
+        $tabel_detail_program_unggulan->addCell(2000, $styleCell)->addText('No dan Tanggal Laporan', $headerTableStyle);
 
+         foreach ($programUnggulan as $key => $value) {
+        $detailPU = CapaianProgramUnggulan::with('kegiatan','program')->where('program_unggulan_id', $value->id)->get();
+        $number = 0;
+          if ($detailPU->count() == 0) {
+                $tabel_detail_program_unggulan->addRow();
+                $tabel_detail_program_unggulan->addCell(13000, $styleCellSpan)->addText('nihil');
+            } else {
 
-        // $number = 0;
-        // foreach ($programUnggulan as $key => $program) {
-        //     $table->addRow();
-        //     $table->addCell(4000, $styleCellSpan)->addText(++$number . '. '. $program->name);
-        //     if($program->jumlah == 0){
-        //             $table->addRow();
-        //             $table->addCell(4000, $styleCellSpan)->addText('nihil');
-        //     }else{
-        //         $num = 0;
-        //         foreach ($program->list as $key => $detail) {
-        //             $table->addRow();
-        //             $table->addCell(500)->addText(++$num);
-        //             $table->addCell(1500)->addText($detail->kegiatan->unit->name);
-        //             $table->addCell(6000)->addText(str_ireplace($breaks, "\r\n",$detail->kegiatan->name));
-        //             $table->addCell(3000)->addText($detail->kegiatan->tempat . '</w:t><w:br/><w:t>' .Carbon::create($detail->kegiatan->start_at)->format('d F Y') . ' s.d ' . Carbon::create($detail->kegiatan->start_at)->format('d F Y'));
-        //         }
-        //     }
-        // }
+        foreach ($detailPU as $key => $value) {
+           
+            $tabel_detail_program_unggulan->addRow();
+            $tabel_detail_program_unggulan->addCell(500, $styleCellSpan)->addText(++$number);
+            $tabel_detail_program_unggulan->addCell(1000)->addText($value->program->name);
+            $tabel_detail_program_unggulan->addCell(6500)->addText(str_ireplace($breaks, "\r\n", $this->escapeSingleValue($value->kegiatan->name)));
+            $tabel_detail_program_unggulan->addCell(3000)->addText($this->escapeSingleValue($value->kegiatan->tempat) . "\r\n" . Carbon::create($value->kegiatan->start_at)->format('d F Y') . ' s.d ' . Carbon::create($value->kegiatan->start_at)->format('d F Y'));
+            $tabel_detail_program_unggulan->addCell(2000)->addText($value->kegiatan->output);  
+            }   
+        }
+    }
 
-        return $table;
+        return  [
+            'tabel_capaian_program_unggulan' => $tabel_capaian_program_unggulan,
+            'tabel_detail_program_unggulan' => $tabel_detail_program_unggulan,
+        ];
+
     }
 
 
