@@ -17,7 +17,6 @@ class ProgramUnggulanController extends BaseController
         $name = $request->input('name');
         $date = $request->input('date');
 
-
         $data = ProgramUnggulan::when($date, function ($query, $date) {
             return $query->where('tahun', $date);
         })

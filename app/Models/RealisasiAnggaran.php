@@ -11,7 +11,7 @@ class RealisasiAnggaran extends Model
 
     protected $fillable = [
         'bulan',
-        'jenis  ',
+        'jenis',
         'tahun',
         'realisasi',
         'dp',

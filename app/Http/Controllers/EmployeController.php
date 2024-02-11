@@ -93,7 +93,7 @@ class EmployeController extends BaseController
                 'gender' =>  $data->gender,
                 'email' =>  $data->email,
                 'pangkat_id' =>  $data->pangkat->id,
-                'jabatan_id' =>  $data->jabatan->id,
+                'jabatan_id' =>  $data->jabatan_id,
                 'unit_id' =>  $data->unit->id,
                 'eselon_id' =>  $data->eselon->id ?? null,
                 'tmt_pangkat' => $data->tmt_pangkat ? Carbon::createFromFormat('d M Y', $data->tmt_pangkat)->format('Y-m-d') : null,
