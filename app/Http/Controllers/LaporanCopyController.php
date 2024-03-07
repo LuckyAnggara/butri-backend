@@ -221,7 +221,7 @@ class LaporanCopyController extends BaseController
 
 
         $time = Carbon::now()->format('is');
-        $name = 'Laporan' . $monthName . $parameter->tahun . $time . '.docx';
+        $name = 'LaporanItjen' . $monthName . $parameter->tahun . $time . '.docx';
         $templateProcessor->saveAs(public_path($name));
 
         return $name;
@@ -259,11 +259,11 @@ class LaporanCopyController extends BaseController
     //         $table->addCell(1000)->addText($program->jumlah);
     //     }
 
-     
+
     //     return $table;
     // }
 
-     public function laporanCapaianProgramUnggulan ($parameter)
+    public function laporanCapaianProgramUnggulan($parameter)
     {
         $tahun = $parameter->tahun;
         $bulan = $parameter->bulan;
@@ -301,42 +301,40 @@ class LaporanCopyController extends BaseController
 
         $styleTable = array('borderSize' => 6, 'borderColor' => '006699', 'cellMargin' => 80);
         $styleCell = array('valign' => 'center', 'size' => 11);
-        $styleCellSpan = array('valign' => 'center', 'size' => 11, 'gridSpan'=>5);
+        $styleCellSpan = array('valign' => 'center', 'size' => 11, 'gridSpan' => 5);
         $headerTableStyle = array('bold' => true, 'align' => 'center');
         // // ADD TABLE
         $tabel_detail_program_unggulan = new Table($styleTable);
         $tabel_detail_program_unggulan->addRow();
         $tabel_detail_program_unggulan->addCell(500, $styleCell)->addText('#', $headerTableStyle);
-        $tabel_detail_program_unggulan->addCell(1000, $styleCell)->addText('Program', $headerTableStyle);
-        $tabel_detail_program_unggulan->addCell(6000, $styleCell)->addText('Nama Kegiatan', $headerTableStyle);
+        $tabel_detail_program_unggulan->addCell(2000, $styleCell)->addText('Program', $headerTableStyle);
+        $tabel_detail_program_unggulan->addCell(5500, $styleCell)->addText('Nama Kegiatan', $headerTableStyle);
         $tabel_detail_program_unggulan->addCell(3000, $styleCell)->addText('Tanggal Pelaksanaan', $headerTableStyle);
         $tabel_detail_program_unggulan->addCell(2000, $styleCell)->addText('No dan Tanggal Laporan', $headerTableStyle);
 
-         foreach ($programUnggulan as $key => $value) {
-        $detailPU = CapaianProgramUnggulan::with('kegiatan','program')->where('program_unggulan_id', $value->id)->get();
-        $number = 0;
-          if ($detailPU->count() == 0) {
+        foreach ($programUnggulan as $key => $value) {
+            $detailPU = CapaianProgramUnggulan::with('kegiatan', 'program')->where('program_unggulan_id', $value->id)->get();
+            $number = 0;
+
+            if ($detailPU->count() == 0) {
                 $tabel_detail_program_unggulan->addRow();
                 $tabel_detail_program_unggulan->addCell(13000, $styleCellSpan)->addText('nihil');
             } else {
-
-        foreach ($detailPU as $key => $value) {
-           
-            $tabel_detail_program_unggulan->addRow();
-            $tabel_detail_program_unggulan->addCell(500, $styleCellSpan)->addText(++$number);
-            $tabel_detail_program_unggulan->addCell(1000)->addText($value->program->name);
-            $tabel_detail_program_unggulan->addCell(6500)->addText(str_ireplace($breaks, "\r\n", $this->escapeSingleValue($value->kegiatan->name)));
-            $tabel_detail_program_unggulan->addCell(3000)->addText($this->escapeSingleValue($value->kegiatan->tempat) . "\r\n" . Carbon::create($value->kegiatan->start_at)->format('d F Y') . ' s.d ' . Carbon::create($value->kegiatan->start_at)->format('d F Y'));
-            $tabel_detail_program_unggulan->addCell(2000)->addText($value->kegiatan->output);  
-            }   
+                foreach ($detailPU as $key => $value) {
+                    $tabel_detail_program_unggulan->addRow();
+                    $tabel_detail_program_unggulan->addCell(500, $styleCell)->addText(++$number);
+                    $tabel_detail_program_unggulan->addCell(2000)->addText($value->program->name);
+                    $tabel_detail_program_unggulan->addCell(5500)->addText(str_ireplace($breaks, "\r\n", $this->escapeSingleValue($value->kegiatan->name)));
+                    $tabel_detail_program_unggulan->addCell(3000)->addText($this->escapeSingleValue($value->kegiatan->tempat) . "\r\n" . Carbon::create($value->kegiatan->start_at)->format('d F Y') . ' s.d ' . Carbon::create($value->kegiatan->start_at)->format('d F Y'));
+                    $tabel_detail_program_unggulan->addCell(2000)->addText($value->kegiatan->output);
+                }
+            }
         }
-    }
 
         return  [
             'tabel_capaian_program_unggulan' => $tabel_capaian_program_unggulan,
             'tabel_detail_program_unggulan' => $tabel_detail_program_unggulan,
         ];
-
     }
 
 
@@ -360,8 +358,8 @@ class LaporanCopyController extends BaseController
         foreach ($data as $key => $media) {
             $table->addRow();
             $table->addCell(1000)->addText($media->type);
-            $table->addCell(3000)->addText($media->keterangan);
-            $table->addCell(3000)->addText($media->link);
+            $table->addCell(3000)->addText($this->escapeSingleValue($media->keterangan));
+            $table->addCell(3000)->addText($this->escapeSingleValue($media->link));
         }
 
         return $table;
@@ -627,6 +625,7 @@ class LaporanCopyController extends BaseController
         $tabel_kegiatan->addCell(1500, $styleCell)->addText('Jenis Kegiatan', $headerTableStyle);
         $tabel_kegiatan->addCell(4000, $styleCell)->addText('Waktu dan Lokasi Kegiatan', $headerTableStyle);
         $number = 0;
+
         foreach ($kegiatans as $key => $kegiatan) {
             $tabel_kegiatan->addRow();
             $tabel_kegiatan->addCell(500)->addText(++$number);
