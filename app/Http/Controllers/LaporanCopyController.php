@@ -221,7 +221,7 @@ class LaporanCopyController extends BaseController
 
 
         $time = Carbon::now()->format('is');
-        $name = 'Laporan' . $monthName . $parameter->tahun . $time . '.docx';
+        $name = 'LaporanItjen' . $monthName . $parameter->tahun . $time . '.docx';
         $templateProcessor->saveAs(public_path($name));
 
         return $name;
@@ -259,11 +259,11 @@ class LaporanCopyController extends BaseController
     //         $table->addCell(1000)->addText($program->jumlah);
     //     }
 
-     
+
     //     return $table;
     // }
 
-     public function laporanCapaianProgramUnggulan ($parameter)
+    public function laporanCapaianProgramUnggulan($parameter)
     {
         $tahun = $parameter->tahun;
         $bulan = $parameter->bulan;
@@ -301,42 +301,40 @@ class LaporanCopyController extends BaseController
 
         $styleTable = array('borderSize' => 6, 'borderColor' => '006699', 'cellMargin' => 80);
         $styleCell = array('valign' => 'center', 'size' => 11);
-        $styleCellSpan = array('valign' => 'center', 'size' => 11, 'gridSpan'=>5);
+        $styleCellSpan = array('valign' => 'center', 'size' => 11, 'gridSpan' => 5);
         $headerTableStyle = array('bold' => true, 'align' => 'center');
         // // ADD TABLE
         $tabel_detail_program_unggulan = new Table($styleTable);
         $tabel_detail_program_unggulan->addRow();
         $tabel_detail_program_unggulan->addCell(500, $styleCell)->addText('#', $headerTableStyle);
-        $tabel_detail_program_unggulan->addCell(1000, $styleCell)->addText('Program', $headerTableStyle);
-        $tabel_detail_program_unggulan->addCell(6000, $styleCell)->addText('Nama Kegiatan', $headerTableStyle);
+        $tabel_detail_program_unggulan->addCell(2000, $styleCell)->addText('Program', $headerTableStyle);
+        $tabel_detail_program_unggulan->addCell(5500, $styleCell)->addText('Nama Kegiatan', $headerTableStyle);
         $tabel_detail_program_unggulan->addCell(3000, $styleCell)->addText('Tanggal Pelaksanaan', $headerTableStyle);
         $tabel_detail_program_unggulan->addCell(2000, $styleCell)->addText('No dan Tanggal Laporan', $headerTableStyle);
 
-         foreach ($programUnggulan as $key => $value) {
-        $detailPU = CapaianProgramUnggulan::with('kegiatan','program')->where('program_unggulan_id', $value->id)->get();
-        $number = 0;
-          if ($detailPU->count() == 0) {
+        foreach ($programUnggulan as $key => $value) {
+            $detailPU = CapaianProgramUnggulan::with('kegiatan', 'program')->where('program_unggulan_id', $value->id)->get();
+            $number = 0;
+
+            if ($detailPU->count() == 0) {
                 $tabel_detail_program_unggulan->addRow();
                 $tabel_detail_program_unggulan->addCell(13000, $styleCellSpan)->addText('nihil');
             } else {
-
-        foreach ($detailPU as $key => $value) {
-           
-            $tabel_detail_program_unggulan->addRow();
-            $tabel_detail_program_unggulan->addCell(500, $styleCellSpan)->addText(++$number);
-            $tabel_detail_program_unggulan->addCell(1000)->addText($value->program->name);
-            $tabel_detail_program_unggulan->addCell(6500)->addText(str_ireplace($breaks, "\r\n", $this->escapeSingleValue($value->kegiatan->name)));
-            $tabel_detail_program_unggulan->addCell(3000)->addText($this->escapeSingleValue($value->kegiatan->tempat) . "\r\n" . Carbon::create($value->kegiatan->start_at)->format('d F Y') . ' s.d ' . Carbon::create($value->kegiatan->start_at)->format('d F Y'));
-            $tabel_detail_program_unggulan->addCell(2000)->addText($value->kegiatan->output);  
-            }   
+                foreach ($detailPU as $key => $value) {
+                    $tabel_detail_program_unggulan->addRow();
+                    $tabel_detail_program_unggulan->addCell(500, $styleCell)->addText(++$number);
+                    $tabel_detail_program_unggulan->addCell(2000)->addText($value->program->name);
+                    $tabel_detail_program_unggulan->addCell(5500)->addText(str_ireplace($breaks, "\r\n", $this->escapeSingleValue($value->kegiatan->name)));
+                    $tabel_detail_program_unggulan->addCell(3000)->addText($this->escapeSingleValue($value->kegiatan->tempat) . "\r\n" . Carbon::create($value->kegiatan->start_at)->format('d F Y') . ' s.d ' . Carbon::create($value->kegiatan->start_at)->format('d F Y'));
+                    $tabel_detail_program_unggulan->addCell(2000)->addText($value->kegiatan->output);
+                }
+            }
         }
-    }
 
         return  [
             'tabel_capaian_program_unggulan' => $tabel_capaian_program_unggulan,
             'tabel_detail_program_unggulan' => $tabel_detail_program_unggulan,
         ];
-
     }
 
 
@@ -360,8 +358,8 @@ class LaporanCopyController extends BaseController
         foreach ($data as $key => $media) {
             $table->addRow();
             $table->addCell(1000)->addText($media->type);
-            $table->addCell(3000)->addText($media->keterangan);
-            $table->addCell(3000)->addText($media->link);
+            $table->addCell(3000)->addText($this->escapeSingleValue($media->keterangan));
+            $table->addCell(3000)->addText($this->escapeSingleValue($media->link));
         }
 
         return $table;
@@ -415,8 +413,8 @@ class LaporanCopyController extends BaseController
         }
         $table->addRow();
         $table->addCell(500)->addText('Total', $headerTableStyle);
-        $table->addCell(500)->addText($totalSuratMasuk);
-        $table->addCell(500)->addText($totalSuratKeluar);
+        $table->addCell(500)->addText($this->escapeSingleValue($totalSuratMasuk));
+        $table->addCell(500)->addText($this->escapeSingleValue($totalSuratKeluar));
 
         return $table;
     }
@@ -490,7 +488,7 @@ class LaporanCopyController extends BaseController
 
         foreach ($bpk as $key => $bpk) {
             $tabel_bpk->addRow();
-            $tabel_bpk->addCell(4000)->addText($bpk->keterangan);
+            $tabel_bpk->addCell(4000)->addText($this->escapeSingleValue($bpk->keterangan));
             $tabel_bpk->addCell(2000)->addText($bpk->jumlah);
             $tabel_bpk->addCell(3000)->addText(number_format(round($bpk->nominal, 2)));
         }
@@ -504,7 +502,7 @@ class LaporanCopyController extends BaseController
 
         foreach ($bpkp as $key => $bpkp) {
             $tabel_bpkp->addRow();
-            $tabel_bpkp->addCell(4000)->addText($bpkp->keterangan);
+            $tabel_bpkp->addCell(4000)->addText($this->escapeSingleValue($bpkp->keterangan));
             $tabel_bpkp->addCell(2000)->addText($bpkp->jumlah);
             $tabel_bpkp->addCell(3000)->addText(number_format(round($bpkp->nominal, 2)));
         }
@@ -518,7 +516,7 @@ class LaporanCopyController extends BaseController
 
         foreach ($ori as $key => $ori) {
             $tabel_ori->addRow();
-            $tabel_ori->addCell(4000)->addText($ori->keterangan);
+            $tabel_ori->addCell(4000)->addText($this->escapeSingleValue($ori->keterangan));
             $tabel_ori->addCell(2000)->addText($ori->jumlah);
             $tabel_ori->addCell(3000)->addText(number_format(round($ori->nominal, 2)));
         }
@@ -627,10 +625,11 @@ class LaporanCopyController extends BaseController
         $tabel_kegiatan->addCell(1500, $styleCell)->addText('Jenis Kegiatan', $headerTableStyle);
         $tabel_kegiatan->addCell(4000, $styleCell)->addText('Waktu dan Lokasi Kegiatan', $headerTableStyle);
         $number = 0;
+
         foreach ($kegiatans as $key => $kegiatan) {
             $tabel_kegiatan->addRow();
             $tabel_kegiatan->addCell(500)->addText(++$number);
-            $tabel_kegiatan->addCell(2000)->addText($kegiatan->unit->name);
+            $tabel_kegiatan->addCell(2000)->addText($this->escapeSingleValue($kegiatan->unit->name));
             $tabel_kegiatan->addCell(6500)->addText(str_ireplace($breaks, "\r\n", $this->escapeSingleValue($kegiatan->name)));
             $tabel_kegiatan->addCell(1500)->addText($kegiatan->jenis_kegiatan);
             $tabel_kegiatan->addCell(4000)->addText($this->escapeSingleValue($kegiatan->tempat) . "\r\n" . Carbon::create($kegiatan->start_at)->format('d F Y') . ' s.d ' . Carbon::create($kegiatan->start_at)->format('d F Y'));
@@ -677,8 +676,8 @@ class LaporanCopyController extends BaseController
         foreach ($jenisPengawasan as $key => $pengawasan) {
             $tabel_rekapitulasi_pengawasan->addRow();
             $tabel_rekapitulasi_pengawasan->addCell(500)->addText(++$number);
-            $tabel_rekapitulasi_pengawasan->addCell(5000)->addText($pengawasan->name);
-            $tabel_rekapitulasi_pengawasan->addCell(1000)->addText($pengawasan->jumlah);
+            $tabel_rekapitulasi_pengawasan->addCell(5000)->addText($this->escapeSingleValue($pengawasan->name));
+            $tabel_rekapitulasi_pengawasan->addCell(1000)->addText($this->escapeSingleValue($pengawasan->jumlah));
         }
 
         // ADD TABLE
@@ -690,11 +689,12 @@ class LaporanCopyController extends BaseController
         $tabel_detail_pengawasan->addCell(3000, $styleCell)->addText('Tmt dan Lokasi', $headerTableStyle);
         $tabel_detail_pengawasan->addCell(3000, $styleCell)->addText('No dan Tgl LHP', $headerTableStyle);
 
+        \PhpOffice\PhpWord\Settings::setOutputEscapingEnabled(true);
 
         $number = 0;
         foreach ($jenisPengawasan as $key => $pengawasan) {
             $tabel_detail_pengawasan->addRow();
-            $tabel_detail_pengawasan->addCell(4000, $styleCellSpan)->addText(++$number . '. ' . $pengawasan->name, $headerTableStyle);
+            $tabel_detail_pengawasan->addCell(4000, $styleCellSpan)->addText(++$number . '. ' . $this->escapeSingleValue($pengawasan->name), $headerTableStyle);
             if ($pengawasan->jumlah == 0) {
                 $tabel_detail_pengawasan->addRow();
                 $tabel_detail_pengawasan->addCell(4000, $styleCellSpan)->addText('nihil');
@@ -703,10 +703,10 @@ class LaporanCopyController extends BaseController
                 foreach ($pengawasan->detail as $key => $detail) {
                     $tabel_detail_pengawasan->addRow();
                     $tabel_detail_pengawasan->addCell(500)->addText(++$num);
-                    $tabel_detail_pengawasan->addCell(1500)->addText(trim($detail->unit->name));
+                    $tabel_detail_pengawasan->addCell(1500)->addText(trim($this->escapeSingleValue($detail->unit->name)));
                     $tabel_detail_pengawasan->addCell(6000)->addText(str_ireplace($breaks, "\r\n", $this->escapeSingleValue($detail->name)));
                     $tabel_detail_pengawasan->addCell(3000)->addText($this->escapeSingleValue($detail->location)  . "\r\n" . Carbon::create($detail->start_at)->format('d F Y') . ' s.d ' . Carbon::create($detail->start_at)->format('d F Y'));
-                    $tabel_detail_pengawasan->addCell(3000)->addText($detail->output);
+                    $tabel_detail_pengawasan->addCell(3000)->addText($this->escapeSingleValue($detail->output));
                 }
             }
         }
