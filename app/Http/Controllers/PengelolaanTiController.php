@@ -12,6 +12,7 @@ class PengelolaanTiController extends BaseController
     {
         $tahun = $request->input('tahun');
         $bulan = $request->input('bulan');
+        $jenis = $request->input('jenis');
 
         $data = PengelolaanTi::when($tahun, function ($query, $tahun) {
             return $query->where('tahun', $tahun);
@@ -31,6 +32,7 @@ class PengelolaanTiController extends BaseController
             $result = PengelolaanTi::create([
                 'keterangan' => $data->keterangan,
                 'bulan' => $data->bulan,
+                'jenis' => $data->jenis,
                 'tahun' => $data->tahun,
                 'created_by' =>  $data->created_by,
             ]);
@@ -51,6 +53,7 @@ class PengelolaanTiController extends BaseController
             $result->update([
                 'keterangan' => $data->keterangan,
                 'bulan' => $data->bulan,
+                'jenis' => $data->jenis,
                 'tahun' => $data->tahun,
                 'created_by' =>  $data->created_by,
             ]);

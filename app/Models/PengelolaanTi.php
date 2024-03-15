@@ -11,6 +11,7 @@ class PengelolaanTi extends Model
     protected $fillable = [
         'bulan',
         'tahun',
+        'jenis',
         'keterangan',
         'created_by'
     ];

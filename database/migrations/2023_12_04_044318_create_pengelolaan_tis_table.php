@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('tahun');
             $table->string('bulan');
+            $table->string('jenis');
             $table->text('keterangan');
             $table->integer('created_by');
             $table->timestamps();
