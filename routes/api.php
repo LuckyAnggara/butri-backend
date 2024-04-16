@@ -45,6 +45,7 @@ use App\Http\Controllers\ProgramUnggulanController;
 use App\Http\Controllers\RealiasaiAnggaranController;
 use App\Http\Controllers\SasaranKementerianController;
 use App\Http\Controllers\SatuanKerjaController;
+use App\Http\Controllers\SopController;
 use App\Http\Controllers\UnitController;
 use App\Models\MonitoringPengaduan;
 use App\Models\MonitoringTemuanBpk;
@@ -148,6 +149,7 @@ Route::resource('dashboard-program', DashboardProgramController::class);
 Route::resource('kegiatan', KegiatanController::class);
 Route::resource('program-kegiatan', ProgramKegiatanController::class);
 Route::resource('sasaran-kementerian', SasaranKementerianController::class);
+Route::resource('sop', SopController::class);
 
 Route::resource('capaian-iku', CapaianIndikatorKegiatanUtamaController::class);
 Route::resource('capaian-ikk', CapaianIndikatorKinerjaKegiatanController::class);

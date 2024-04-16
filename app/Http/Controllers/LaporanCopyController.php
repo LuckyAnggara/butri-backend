@@ -945,7 +945,10 @@ class LaporanCopyController extends BaseController
         $date = Carbon::createFromFormat('Y-m-d', $tahun . '-' . $bulan . '-' . '31');
         $dateQuery = $date->format('Y-m-d 23:59:59');
 
-        $pegawai = Employe::all();
+        $pegawai = Employe::where(function ($query) {
+            $query->WhereNull('tmt_pensiun')
+                ->orWhereNot('tmt_pensiun', '<=', Carbon::today());
+        })->get();
         $mutasi = MutasiPegawai::whereMonth('created_at',  $dateQuery)->get();
         $pengembangan = Pengembangan::whereMonth('created_at',  $dateQuery)->get();
         $kgb = KenaikanGajiBerkala::whereMonth('created_at',  $dateQuery)->get();
@@ -956,7 +959,6 @@ class LaporanCopyController extends BaseController
 
         foreach ($pangkat as $key => $value) {
             $count = Employe::where('pangkat_id', $value->id)->whereMonth('created_at', '<=', $dateQuery)->get()->count();
-
             $value->jumlah = $count;
         }
 

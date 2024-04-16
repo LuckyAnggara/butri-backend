@@ -39,8 +39,14 @@ class DashboardKepegawaianController extends BaseController
         // } else {
         //     $pegawai = Employe::all();
         // }
+
+
+
         $pegawai = Employe::when($unit, function ($query, $unit) {
             return $query->where('unit_id', $unit);
+        })->where(function ($query) {
+            $query->WhereNull('tmt_pensiun')
+                ->orWhereNot('tmt_pensiun', '<=', Carbon::today());
         })->get();
 
         // $mutasi = MutasiPegawai::whereMonth('created_at',  $dateQuery)->get();

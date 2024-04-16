@@ -54,7 +54,7 @@ class MutasiPegawaiController extends BaseController
                     'nomor_sk' => $data->nomor_sk,
                     'notes' => $data->notes,
                     'employe_id' => $value->id,
-                    'jabatan_id' => $value->jabatan_id,
+                    'jabatan_id' => $value->jabatan,
                     'jabatan_new_id' => $value->jabatan_new_id,
                     'unit_id' => $value->unit_id,
                     'unit_new_id' => $value->keluar ?? false ? 0 : $value->unit_new_id,
